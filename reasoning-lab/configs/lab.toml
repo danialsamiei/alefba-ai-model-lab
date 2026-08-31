@@ -1,0 +1,68 @@
+[model]
+context_length = 160
+d_model = 48
+n_heads = 4
+n_layers = 2
+d_ff = 96
+dropout = 0.0
+window_size = 8
+n_experts = 4
+top_k = 1
+router_aux_weight = 0.01
+router_z_weight = 0.001
+
+[data]
+seed = 20260830
+train_episodes = 1200
+validation_episodes = 160
+iid_test_episodes = 160
+depth_ood_episodes = 120
+rag_holdout_episodes = 80
+train_max_depth = 2
+ood_depth = 3
+max_distractors = 2
+
+[window_mlp_train]
+steps = 500
+batch_size = 32
+learning_rate = 0.003
+min_learning_rate = 0.0001
+warmup_steps = 30
+eval_interval = 100
+weight_decay = 0.01
+gradient_clip = 1.0
+
+[dense_direct_train]
+steps = 600
+batch_size = 32
+learning_rate = 0.002
+min_learning_rate = 0.0001
+warmup_steps = 40
+eval_interval = 100
+weight_decay = 0.01
+gradient_clip = 1.0
+
+[dense_scratch_train]
+steps = 900
+batch_size = 32
+learning_rate = 0.002
+min_learning_rate = 0.0001
+warmup_steps = 50
+eval_interval = 100
+weight_decay = 0.01
+gradient_clip = 1.0
+
+[moe_scratch_train]
+steps = 1000
+batch_size = 32
+learning_rate = 0.0018
+min_learning_rate = 0.0001
+warmup_steps = 60
+eval_interval = 100
+weight_decay = 0.01
+gradient_clip = 1.0
+
+[lab]
+seed = 20260830
+evaluation_limit_per_split = 40
+body_limit_bytes = 16384

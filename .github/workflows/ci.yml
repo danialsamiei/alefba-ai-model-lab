@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  digit-microscope:
+    name: Digit microscope / Python
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+      - name: Install Python and locked dependencies
+        run: uv sync --frozen
+      - name: Static analysis
+        run: |
+          uv run ruff check src tests
+          uv run mypy src
+      - name: Tests
+        run: uv run pytest
+
+  reasoning-lab:
+    name: Micro reasoning lab / Python
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: reasoning-lab
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+      - name: Install Python and locked dependencies
+        run: uv sync --frozen
+      - name: Static analysis
+        run: |
+          uv run ruff check src tests
+          uv run mypy src
+      - name: Tests
+        run: uv run pytest
+
+  desktop:
+    name: Desktop / deterministic simulations and web build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: reasoning-lab/desktop
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: reasoning-lab/desktop/package-lock.json
+      - name: Install exact dependencies
+        run: npm ci
+      - name: Test and build offline renderer
+        run: npm run check
+
+  windows-package:
+    name: Windows portable package
+    runs-on: windows-latest
+    timeout-minutes: 20
+    needs: desktop
+    defaults:
+      run:
+        working-directory: reasoning-lab/desktop
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: reasoning-lab/desktop/package-lock.json
+      - name: Install exact dependencies
+        run: npm ci
+      - name: Build unsigned portable EXE
+        run: npm run dist:win
+      - name: Verify package contract and SHA-256
+        run: npm run verify:release
+      - name: Upload unsigned test artifact
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: alefba-ai-model-lab-windows-unsigned
+          path: |
+            reasoning-lab/desktop/release/*.exe
+            reasoning-lab/desktop/release/*.sha256
+            reasoning-lab/desktop/release/release-manifest.json
+          if-no-files-found: error

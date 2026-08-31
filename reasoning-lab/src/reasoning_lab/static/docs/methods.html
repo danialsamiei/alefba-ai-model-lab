@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>راهنمای روش‌ها — آزمایشگاه میکروسکوپی استدلال</title>
+    <style>
+      :root { --ink:#e9eee7; --muted:#9ba69d; --paper:#101411; --panel:#171d18; --line:#344137; --acid:#b9f227; --cyan:#62d9ce; --orange:#f39a53; --mono:"Cascadia Code",monospace; --sans:"Vazirmatn","Segoe UI",Tahoma,sans-serif; }
+      * { box-sizing:border-box; }
+      html { scroll-behavior:smooth; }
+      body { margin:0; color:var(--ink); background:radial-gradient(circle at 8% 0,rgba(98,217,206,.08),transparent 30rem),var(--paper); font:16px/1.9 var(--sans); }
+      a { color:var(--cyan); text-underline-offset:.22rem; }
+      a:hover { color:var(--acid); }
+      a:focus-visible { outline:2px solid var(--acid); outline-offset:3px; }
+      header.hero, main, footer { width:min(1120px,calc(100% - 2rem)); margin-inline:auto; }
+      .hero { padding:3rem 0 2rem; border-bottom:1px solid var(--line); }
+      .eyebrow { direction:ltr; text-align:right; color:var(--acid); font:.7rem var(--mono); letter-spacing:.12em; }
+      h1 { margin:.4rem 0; font-size:clamp(2rem,5vw,4rem); line-height:1.2; }
+      .lead { max-width:780px; color:#bcc5bd; }
+      .back { display:inline-block; margin-top:1rem; }
+      nav.toc { position:sticky; top:0; z-index:4; background:rgba(16,20,17,.94); border-bottom:1px solid var(--line); display:flex; gap:.5rem; overflow:auto; padding:.65rem max(1rem,calc((100vw - 1120px)/2)); }
+      nav.toc a { flex:0 0 auto; border:1px solid var(--line); padding:.35rem .65rem; color:var(--muted); font-size:.72rem; text-decoration:none; }
+      main { padding:1rem 0 4rem; }
+      section { scroll-margin-top:5rem; margin-top:1rem; padding:1.2rem; border:1px solid var(--line); background:rgba(23,29,24,.72); }
+      section > header { display:grid; grid-template-columns:auto 1fr; gap:.7rem; align-items:center; border-bottom:1px solid var(--line); padding-bottom:.8rem; }
+      section > header span { color:var(--acid); font:.67rem var(--mono); }
+      h2 { margin:0; font-size:1.15rem; }
+      .family-note { color:var(--muted); font-size:.82rem; }
+      .legend { display:grid; grid-template-columns:repeat(3,1fr); gap:.65rem; }
+      .legend article { border:1px solid var(--line); padding:.8rem; }
+      .legend b { display:block; margin-bottom:.3rem; }
+      .legend p { margin:0; color:var(--muted); font-size:.76rem; }
+      .status { width:max-content; border:1px solid currentColor; padding:.12rem .4rem; font-size:.62rem; }
+      .live { color:var(--acid); } .model { color:var(--cyan); } .read { color:var(--orange); }
+      .method { scroll-margin-top:5rem; margin-top:.8rem; border:1px solid var(--line); padding:1rem; background:rgba(0,0,0,.12); }
+      .method header { display:flex; flex-wrap:wrap; gap:.6rem; align-items:center; }
+      .method h3 { margin:0; font-size:.96rem; }
+      .method p { margin:.55rem 0 0; color:#c1c9c2; font-size:.82rem; }
+      .flow { direction:ltr; display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:.45rem; align-items:center; margin-top:.75rem; }
+      .flow span { direction:rtl; border:1px solid var(--line); min-height:58px; display:grid; place-items:center; padding:.5rem; text-align:center; font-size:.72rem; }
+      .flow i { color:var(--cyan); font-style:normal; }
+      .boundary { border-inline-start:2px solid var(--orange); padding-inline-start:.7rem; color:#e4b58d !important; }
+      .source { font-size:.72rem !important; color:var(--muted) !important; }
+      .audit-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:.7rem; }
+      .audit-grid article { border:1px solid var(--line); padding:.8rem; }
+      .audit-grid h3 { margin:0 0 .35rem; font-size:.82rem; }
+      .audit-grid p { margin:0; color:var(--muted); font-size:.76rem; }
+      footer { padding:1.5rem 0 3rem; color:var(--muted); border-top:1px solid var(--line); font-size:.72rem; }
+      @media (max-width:700px) { .legend,.audit-grid { grid-template-columns:1fr; } .flow { grid-template-columns:1fr; } .flow i { transform:rotate(-90deg); justify-self:center; } }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <p class="eyebrow">MICRO REASONING LAB / METHOD FIELD GUIDE / 2026-08-31</p>
+      <h1>راهنمای تشریحی خانواده‌های مدل زبانی</h1>
+      <p class="lead">این سند تفاوت «معماری»، «روش آموزش»، «راهبرد استنتاج»، «حافظهٔ بیرونی» و «سامانهٔ عامل‌محور» را روشن می‌کند. هیچ کارت تشریحی به‌تنهایی به معنی وجود کد، وزن یا نتیجهٔ تجربی در پروژه نیست.</p>
+      <a class="back" href="/#method-map">بازگشت به اطلس تعاملی آزمایشگاه ←</a>
+    </header>
+
+    <nav class="toc" aria-label="فهرست سند">
+      <a href="#status">راهنمای وضعیت</a><a href="#architecture">معماری</a><a href="#training">آموزش</a><a href="#inference">استنتاج</a><a href="#knowledge">دانش و حافظه</a><a href="#system">سامانه</a><a href="#evaluation">ارزیابی</a><a href="#sources">منابع</a>
+    </nav>
+
+    <main>
+      <section id="status">
+        <header><span>00</span><h2>چگونه وضعیت هر روش را بخوانیم؟</h2></header>
+        <p class="family-note">این سه وضعیت عمداً با هم قابل‌جایگزینی نیستند. «مدل تشریحی» یعنی رابطه‌ها روی صفحه قابل دنبال‌کردن‌اند، نه اینکه الگوریتم در backend اجرا شده باشد.</p>
+        <div class="legend">
+          <article><b class="live">اجراشده</b><p>کد یا وزن واقعی، مسیر اجرایی و آزمون متناسب در همین snapshot موجود است.</p></article>
+          <article><b class="model">مدل تشریحی</b><p>ورودی→سازوکار→خروجی شبیه‌سازی شده، اما checkpoint یا اجرای کامل آن روش وجود ندارد.</p></article>
+          <article><b class="read">مطالعه‌ای</b><p>برای جای‌دادن مفهوم در نقشه و اتصال به مقاله آمده و اجرای محلی ندارد.</p></article>
+        </div>
+      </section>
+
+      <section id="experiment">
+        <header><span>01</span><h2>قرارداد آزمایش</h2></header>
+        <p class="family-note">ورودی، mode و policy استنتاج متغیرهای جدا هستند. در این پروژه برچسب effort هم‌زمان تعداد کاندیدا، temperature و top-k را تغییر می‌دهد؛ بنابراین مقایسهٔ آن «سه policy با checkpoint ثابت» است، نه برآورد علّی اثر صرفِ محاسبهٔ بیشتر.</p>
+      </section>
+
+      <section id="architecture">
+        <header><span>02</span><h2>خانوادهٔ معماری‌های دنباله</h2></header>
+        <p class="family-note">معماری تعیین می‌کند اطلاعات چگونه میان موقعیت‌های دنباله جابه‌جا شود. LoRA، RAG و FlashAttention معماری زبانی تازه نیستند و در بخش‌های دیگر قرار می‌گیرند.</p>
+
+        <article class="method" id="ngram"><header><span class="status live">اجراشده</span><h3>N-gram / مدل شمارشی</h3></header><p>احتمال توکن بعدی از شمارش رخداد ادامه‌ها پس از یک suffix کوتاه به دست می‌آید. اگر context کامل دیده نشده باشد، backoff به suffix کوتاه‌تر برمی‌گردد.</p><div class="flow"><span>چند توکن اخیر</span><i>←</i><span>شمارش شرطی و backoff</span><i>←</i><span>توزیع توکن بعدی</span></div><p class="boundary">مرز پروژه: baseline واقعی است، اما شبکهٔ عصبی، حافظهٔ دور یا reasoning ندارد.</p><p class="source"><a href="https://doi.org/10.1002/j.1538-7305.1948.tb01338.x" target="_blank" rel="noopener noreferrer">Shannon 1948 — منبع علمی ↗</a></p></article>
+
+        <article class="method" id="window-mlp"><header><span class="status live">اجراشده</span><h3>Window MLP</h3></header><p>شناسه‌های یک پنجرهٔ ثابت embedding می‌شوند، بردارها کنار هم قرار می‌گیرند و MLP به logit واژگان می‌رسد. ترتیب فقط از جایگاه ثابت هر ورودی فهمیده می‌شود.</p><div class="flow"><span>هشت توکن آخر</span><i>←</i><span>Embedding و MLP</span><i>←</i><span>logit واژگان</span></div><p class="boundary">مرز پروژه: checkpoint واقعی دارد؛ هر چیزی بیرون پنجره مستقیماً غیرقابل‌مشاهده است.</p><p class="source"><a href="https://www.jmlr.org/papers/v3/bengio03a.html" target="_blank" rel="noopener noreferrer">Bengio et al. 2003 ↗</a></p></article>
+
+        <article class="method" id="rnn-lstm"><header><span class="status model">مدل تشریحی</span><h3>RNN / LSTM / GRU</h3></header><p>RNN یک state را از گام قبلی عبور می‌دهد. LSTM و GRU با gateها جریان نوشتن، فراموش‌کردن و خواندن state را کنترل می‌کنند تا وابستگی‌های دور بهتر حفظ شوند.</p><div class="flow"><span>توکن + state قبلی</span><i>←</i><span>gate و recurrence</span><i>←</i><span>state تازه</span></div><p class="boundary">مرز پروژه: هیچ لایه یا checkpoint بازگشتی وجود ندارد.</p><p class="source"><a href="https://doi.org/10.1162/neco.1997.9.8.1735" target="_blank" rel="noopener noreferrer">Hochreiter &amp; Schmidhuber 1997 ↗</a></p></article>
+
+        <article class="method" id="conv-sequence"><header><span class="status model">مدل تشریحی</span><h3>CNN / TCN دنباله‌ای</h3></header><p>کانولوشن علّی روی همسایگی توکن حرکت می‌کند. stacking و dilation میدان دید را بزرگ می‌کنند، در حالی که محاسبهٔ موقعیت‌ها هنگام آموزش موازی می‌ماند.</p><div class="flow"><span>نوار توکن‌ها</span><i>←</i><span>فیلتر علّی و dilation</span><i>←</i><span>ویژگی زمینه‌ای</span></div><p class="boundary">مرز پروژه: رشد میدان دید فقط در دیاگرام است و مدل convolutional آموزش ندیده است.</p><p class="source"><a href="https://proceedings.mlr.press/v70/gehring17a.html" target="_blank" rel="noopener noreferrer">ConvS2S, ICML 2017 ↗</a></p></article>
+
+        <article class="method" id="encoder-decoder"><header><span class="status model">مدل تشریحی</span><h3>Encoder–Decoder</h3></header><p>encoder کل دنبالهٔ مبدأ را بازنمایی می‌کند؛ decoder با شرط‌گذاری بر آن بازنمایی، دنبالهٔ مقصد را می‌سازد. cross-attention شکل رایج اتصال دو نیمه است.</p><div class="flow"><span>دنبالهٔ مبدأ</span><i>←</i><span>encode و cross-attend</span><i>←</i><span>دنبالهٔ مقصد</span></div><p class="boundary">مرز پروژه: مدل‌های عصبی محلی decoder-only هستند؛ افزودن متن RAG به prefix معادل encoder جدا نیست.</p><p class="source"><a href="https://proceedings.neurips.cc/paper_files/paper/2014/hash/5a18e133cbf9f257297f410bb7eca942-Abstract.html" target="_blank" rel="noopener noreferrer">Seq2Seq, NeurIPS 2014 ↗</a></p></article>
+
+        <article class="method" id="dense-transformer"><header><span class="status live">اجراشده</span><h3>Dense Transformer</h3></header><p>query هر موقعیت با keyهای مجاز مقایسه می‌شود، softmax وزن اتصال را می‌سازد و ترکیب valueها بازنمایی تازه را شکل می‌دهد. mask علّی از دیدن آینده جلوگیری می‌کند.</p><div class="flow"><span>توکن‌های context</span><i>←</i><span>QKᵀ → softmax → V</span><i>←</i><span>بازنمایی و logit</span></div><p class="boundary">مرز پروژه: Transformer دو‌لایه و میکرو واقعی است؛ foundation model عمومی نیست.</p><p class="source"><a href="https://proceedings.neurips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html" target="_blank" rel="noopener noreferrer">Attention Is All You Need ↗</a></p></article>
+
+        <article class="method" id="long-sparse-attention"><header><span class="status model">مدل تشریحی</span><h3>Long / Sparse Attention</h3></header><p>هر توکن فقط یک پنجرهٔ محلی و چند موقعیت global را می‌بیند. الگوی اتصال، هزینه را از همه‌به‌همه کمتر می‌کند ولی باید مسیر انتقال اطلاعات مهم را حفظ کند.</p><div class="flow"><span>دنبالهٔ بلند</span><i>←</i><span>پنجرهٔ محلی + global</span><i>←</i><span>context بلند</span></div><p class="boundary">مرز پروژه: context کوتاه و attention متراکم است.</p><p class="source"><a href="https://arxiv.org/abs/2004.05150" target="_blank" rel="noopener noreferrer">Longformer 2020 ↗</a></p></article>
+
+        <article class="method" id="state-space"><header><span class="status model">مدل تشریحی</span><h3>State-Space Model / Mamba</h3></header><p>SSM دنباله را با انتقال یک state فشرده پردازش می‌کند. Mamba پارامترهای انتقال را وابسته به ورودی می‌کند تا انتشار یا فراموش‌کردن اطلاعات انتخابی شود.</p><div class="flow"><span>توکن + state</span><i>←</i><span>selective transition</span><i>←</i><span>state و خروجی تازه</span></div><p class="boundary">مرز پروژه: selective scan یا kernel مربوط به Mamba وجود ندارد.</p><p class="source"><a href="https://arxiv.org/abs/2312.00752" target="_blank" rel="noopener noreferrer">Mamba 2023 ↗</a></p></article>
+
+        <article class="method" id="sparse-moe"><header><span class="status live">اجراشده</span><h3>Sparse Mixture-of-Experts</h3></header><p>router برای هر توکن امتیاز expertها را می‌سازد و فقط top-k را فعال می‌کند. در نتیجه تعداد پارامتر کل می‌تواند از پارامتر فعال هر token بیشتر باشد.</p><div class="flow"><span>بازنمایی توکن</span><i>←</i><span>router → top-1 expert</span><i>←</i><span>خروجی expert</span></div><p class="boundary">مرز پروژه: چهار expert و top-1 واقعی‌اند؛ برچسب معنایی یا «ذهن مستقل» برای expertها اثبات نشده است.</p><p class="source"><a href="https://www.jmlr.org/papers/v23/21-0998.html" target="_blank" rel="noopener noreferrer">Switch Transformer 2022 ↗</a></p></article>
+      </section>
+
+      <section id="training">
+        <header><span>03</span><h2>آموزش، انطباق و فشرده‌سازی</h2></header>
+        <p class="family-note">این روش‌ها تعیین می‌کنند کدام پارامتر با چه سیگنالی تغییر کند. آن‌ها را نباید با معماری forward pass یا روش decoding یکی دانست.</p>
+
+        <article class="method" id="scratch-supervision"><header><span class="status live">اجراشده</span><h3>Supervised Training + Scratchpad</h3></header><p>teacher forcing در هر موقعیت payload هدف، توکن درست قبلی را در اختیار مدل می‌گذارد و cross-entropy پیش‌بینی بعدی را آموزش می‌دهد. trace تولیدی یک قرارداد خروجی است.</p><div class="flow"><span>نمونهٔ برچسب‌خورده</span><i>←</i><span>masked loss + AdamW</span><i>←</i><span>checkpoint</span></div><p class="boundary">مرز پروژه: وزن‌ها از initialization تصادفی آموزش یافته‌اند؛ در آموزش scratch کل payload هدف supervised است، ولی inference قاب نحوی را میزبان می‌سازد و فقط slotهای رقمی نمونه‌گیری می‌شوند.</p><p class="source"><a href="https://arxiv.org/abs/2112.00114" target="_blank" rel="noopener noreferrer">Scratchpads 2021 ↗</a></p></article>
+
+        <article class="method" id="self-supervised-pretraining"><header><span class="status read">مطالعه‌ای</span><h3>پیش‌آموزش خودنظارتی</h3></header><p>برچسب از خود داده ساخته می‌شود: پیش‌بینی توکن بعدی، بازسازی token ماسک‌شده یا هدف‌های مشابه. مدل پایه سپس برای دستور یا دامنهٔ خاص سازگار می‌شود.</p><div class="flow"><span>پیکرهٔ بزرگ</span><i>←</i><span>هدف زبانی خودنظارتی</span><i>←</i><span>مدل پایه</span></div><p class="boundary">مرز پروژه: curriculum کوچک قاعده‌محور است و pretraining عمومی ندارد.</p><p class="source"><a href="https://aclanthology.org/N19-1423/" target="_blank" rel="noopener noreferrer">BERT, NAACL 2019 ↗</a></p></article>
+
+        <article class="method" id="rlhf"><header><span class="status read">مطالعه‌ای</span><h3>RLHF</h3></header><p>پس از SFT، انسان‌ها خروجی‌ها را رتبه‌بندی می‌کنند؛ reward model این ترجیح را تقریب می‌زند و policy با RL به سمت پاداش بیشتر حرکت می‌کند، معمولاً همراه محدودیت فاصله از مدل مرجع.</p><div class="flow"><span>رتبه‌بندی انسانی</span><i>←</i><span>reward model + RL</span><i>←</i><span>policy تنظیم‌شده</span></div><p class="boundary">مرز پروژه: دادهٔ preference، reward model و PPO وجود ندارند.</p><p class="source"><a href="https://proceedings.neurips.cc/paper_files/paper/2022/hash/b1efde53be364a73914f58805a001731-Abstract.html" target="_blank" rel="noopener noreferrer">InstructGPT, NeurIPS 2022 ↗</a></p></article>
+
+        <article class="method" id="dpo"><header><span class="status model">مدل تشریحی</span><h3>Direct Preference Optimization</h3></header><p>DPO یک زوج chosen/rejected را مستقیماً به objective ترجیح تبدیل می‌کند. policy نسبت به reference باید احتمال نسبی پاسخ انتخاب‌شده را بالاتر ببرد، بدون reward model جداگانه.</p><div class="flow"><span>chosen / rejected</span><i>←</i><span>loss ترجیح</span><i>←</i><span>policy تازه</span></div><p class="boundary">مرز پروژه: فقط جهت loss مدل شده و آموزش DPO انجام نشده است.</p><p class="source"><a href="https://proceedings.neurips.cc/paper_files/paper/2023/hash/a85b405ed65c6477a4fe8302b5e06ce7-Abstract-Conference.html" target="_blank" rel="noopener noreferrer">DPO, NeurIPS 2023 ↗</a></p></article>
+
+        <article class="method" id="lora-qlora"><header><span class="status model">مدل تشریحی</span><h3>LoRA / QLoRA</h3></header><p>LoRA backbone را ثابت نگه می‌دارد و تغییر وزن را با حاصل‌ضرب دو ماتریس کم‌رتبه یاد می‌گیرد. QLoRA backbone منجمد را 4-bit نگه می‌دارد و gradient را به adapterها می‌رساند.</p><div class="flow"><span>مدل پایه + داده</span><i>←</i><span>W ثابت + BA</span><i>←</i><span>adapter کوچک</span></div><p class="boundary">مرز پروژه: مدل پایهٔ pretrained یا adapter ندارد و از صفر full-parameter آموزش دیده است.</p><p class="source"><a href="https://arxiv.org/abs/2106.09685" target="_blank" rel="noopener noreferrer">LoRA ↗</a> · <a href="https://proceedings.neurips.cc/paper_files/paper/2023/hash/1feb87871436031bdc0f2beaa62a049b-Abstract.html" target="_blank" rel="noopener noreferrer">QLoRA ↗</a></p></article>
+
+        <article class="method" id="distillation"><header><span class="status model">مدل تشریحی</span><h3>Knowledge Distillation</h3></header><p>student علاوه بر برچسب سخت، توزیع نرم teacher را می‌بیند. این توزیع شباهت و عدم‌قطعیت میان گزینه‌ها را منتقل می‌کند، اما تضمین نمی‌کند همهٔ رفتار teacher حفظ شود.</p><div class="flow"><span>teacher + داده</span><i>←</i><span>soft-target loss</span><i>←</i><span>student کوچک</span></div><p class="boundary">مرز پروژه: teacher/student pair آموزش داده نشده است.</p><p class="source"><a href="https://arxiv.org/abs/1503.02531" target="_blank" rel="noopener noreferrer">Hinton et al. 2015 ↗</a></p></article>
+
+        <article class="method" id="quantization"><header><span class="status model">مدل تشریحی</span><h3>Quantization</h3></header><p>بازهٔ وزن یا activation با scale به مجموعهٔ محدود اعداد نگاشت می‌شود. post-training quantization پس از آموزش انجام می‌شود؛ quantization-aware training خطا را حین آموزش مدل می‌کند.</p><div class="flow"><span>وزن شناور</span><i>←</i><span>scale + rounding</span><i>←</i><span>وزن کم‌بیت</span></div><p class="boundary">مرز پروژه: checkpointها quantized نیستند و نمایش کارت فقط خطای تقریب را نشان می‌دهد.</p><p class="source"><a href="https://arxiv.org/abs/2210.17323" target="_blank" rel="noopener noreferrer">GPTQ 2022 ↗</a></p></article>
+      </section>
+
+      <section id="inference">
+        <header><span>04</span><h2>استنتاج، decoding و reasoning-time control</h2></header>
+        <p class="family-note">decoding از یک توزیع توکن خروجی می‌سازد؛ search چند خروجی را می‌سنجد؛ بهینه‌سازی kernel فقط اجرای همان محاسبه را سریع‌تر می‌کند. این سه سطح توانایی یکسان نیستند.</p>
+
+        <article class="method" id="sampling"><header><span class="status live">اجراشده</span><h3>Greedy / Temperature / Top-k</h3></header><p>temperature شکل توزیع را تیز یا تخت می‌کند؛ top-k فقط k گزینهٔ بالاتر را نگه می‌دارد؛ greedy بیشینه را می‌گیرد و sampling مطابق احتمال انتخاب می‌کند.</p><div class="flow"><span>logitها</span><i>←</i><span>temperature و top-k</span><i>←</i><span>توکن منتخب</span></div><p class="boundary">مرز پروژه: این مسیر واقعی است؛ nucleus/top-p پیاده نشده است.</p><p class="source"><a href="https://arxiv.org/abs/1904.09751" target="_blank" rel="noopener noreferrer">Nucleus Sampling 2020 ↗</a></p></article>
+
+        <article class="method" id="beam-contrastive"><header><span class="status model">مدل تشریحی</span><h3>Beam / Contrastive Search</h3></header><p>beam چند فرضیهٔ فعال را گسترش و prune می‌کند. contrastive search احتمال مدل را با جریمهٔ شباهت بازنمایی ترکیب می‌کند تا degeneration و تکرار کاهش یابد.</p><div class="flow"><span>چند پیشوند</span><i>←</i><span>گسترش، امتیاز، pruning</span><i>←</i><span>دنبالهٔ منتخب</span></div><p class="boundary">مرز پروژه: چند sample مستقل beam یا contrastive search نیست.</p><p class="source"><a href="https://proceedings.neurips.cc/paper_files/paper/2022/hash/871cae8f599cb8bbfcb0f58fe1af95ad-Abstract-Conference.html" target="_blank" rel="noopener noreferrer">Contrastive Search, NeurIPS 2022 ↗</a></p></article>
+
+        <article class="method" id="self-consistency"><header><span class="status live">تقریب اجراشده</span><h3>Self-Consistency میکرو</h3></header><p>ایدهٔ اصلی چند مسیر استدلال و تجمیع پاسخ‌های نهایی است. مسیرهای متنوع می‌توانند خطای یک مسیر را خنثی کنند، ولی هزینه چندبرابر می‌شود و رأی همیشه درست نیست.</p><div class="flow"><span>یک مسئله</span><i>←</i><span>چند sample + aggregate</span><i>←</i><span>پاسخ منتخب</span></div><p class="boundary">مرز پروژه: ۱/۴/۸ کاندیدا واقعی‌اند، اما protocol validity و verifier score نیز رتبه‌بندی را عوض می‌کنند؛ پس self-consistency خالص نیست.</p><p class="source"><a href="https://openreview.net/pdf?id=1PL1NIMMrw" target="_blank" rel="noopener noreferrer">Self-Consistency, ICLR 2023 ↗</a></p></article>
+
+        <article class="method" id="speculative-decoding"><header><span class="status model">مدل تشریحی</span><h3>Speculative Decoding</h3></header><p>مدل draft چند توکن ارزان پیشنهاد می‌کند؛ مدل target آن‌ها را در یک محاسبه بررسی می‌کند و الگوریتم پذیرش توزیع target را حفظ می‌کند. هدف سرعت است، نه reasoning بیشتر.</p><div class="flow"><span>draft model</span><i>←</i><span>پیشنهاد + تأیید target</span><i>←</i><span>توکن پذیرفته</span></div><p class="boundary">مرز پروژه: زوج draft/target و acceptance sampling وجود ندارند.</p><p class="source"><a href="https://proceedings.mlr.press/v202/leviathan23a.html" target="_blank" rel="noopener noreferrer">Speculative Decoding, ICML 2023 ↗</a></p></article>
+
+        <article class="method" id="kv-cache-gqa"><header><span class="status model">مدل تشریحی</span><h3>KV Cache / MQA / GQA</h3></header><p>در تولید autoregressive، key و value گذشته تغییر نمی‌کنند و می‌توان آن‌ها را cache کرد. MQA/GQA headهای K/V را میان چند query head مشترک می‌کنند تا cache کوچک‌تر شود.</p><div class="flow"><span>K/V گذشته + Q تازه</span><i>←</i><span>reuse و grouped heads</span><i>←</i><span>attention گام تازه</span></div><p class="boundary">مرز پروژه: decoder در هر گام forward کامل می‌زند و KV cache اختصاصی ندارد.</p><p class="source"><a href="https://aclanthology.org/2023.emnlp-main.298/" target="_blank" rel="noopener noreferrer">GQA, EMNLP 2023 ↗</a></p></article>
+
+        <article class="method" id="flash-attention"><header><span class="status read">مطالعه‌ای</span><h3>FlashAttention</h3></header><p>با tile‌بندی و محاسبهٔ online softmax، خواندن و نوشتن میان HBM و SRAM کاهش می‌یابد. نتیجه attention دقیق است؛ روش صرفاً ترتیب محاسبه را IO-aware می‌کند.</p><div class="flow"><span>Q، K، V</span><i>←</i><span>tiled exact attention</span><i>←</i><span>همان نتیجه با IO کمتر</span></div><p class="boundary">مرز پروژه: CPU micro است و kernel FlashAttention ندارد؛ این روش reasoning جدید نیست.</p><p class="source"><a href="https://proceedings.neurips.cc/paper_files/paper/2022/hash/67d57c32e20fd0a7a302cb81d36e40d5-Abstract.html" target="_blank" rel="noopener noreferrer">FlashAttention, NeurIPS 2022 ↗</a></p></article>
+
+        <article class="method" id="grammar-verifier"><header><span class="status live">اجراشده</span><h3>Grammar Constraint + Verifier</h3></header><p>constraint گزینه‌های نحوی نامعتبر را mask می‌کند. verifier پس از تولید، ساختار و نتیجهٔ قابل‌محاسبه را مستقل می‌سنجد و ممکن است در انتخاب کاندیدا اثر بگذارد.</p><div class="flow"><span>logit + state قواعد</span><i>←</i><span>mask، decode، verify</span><i>←</i><span>خروجی معتبر/ردشده</span></div><p class="boundary">مرز پروژه: validator میزبان واقعی است؛ اعتبار قالب با درستی پاسخ و با توان model-only یکی نیست.</p><p class="source"><a href="https://aclanthology.org/2021.emnlp-main.779/" target="_blank" rel="noopener noreferrer">PICARD, EMNLP 2021 ↗</a></p></article>
+
+        <article class="method" id="tot-planning"><header><span class="status model">مدل تشریحی</span><h3>Tree of Thoughts / Planning Search</h3></header><p>به‌جای ادامهٔ خطی، چند thought-state گسترش می‌یابد؛ evaluator شاخه‌ها را امتیاز می‌دهد و search می‌تواند lookahead یا backtrack کند.</p><div class="flow"><span>state مسئله</span><i>←</i><span>expand، score، backtrack</span><i>←</i><span>مسیر حل</span></div><p class="boundary">مرز پروژه: sampleهای مستقل tree search، reflection یا MCTS نیستند.</p><p class="source"><a href="https://proceedings.neurips.cc/paper/2023/hash/271db9922b8d1f4dd7aaef84ed5ac703-Abstract.html" target="_blank" rel="noopener noreferrer">Tree of Thoughts, NeurIPS 2023 ↗</a></p></article>
+      </section>
+
+      <section id="knowledge">
+        <header><span>05</span><h2>دانش بیرونی و حافظه</h2></header>
+        <p class="family-note">دادهٔ retrieved وارد context می‌شود، اما خودبه‌خود به وزن مدل تبدیل نمی‌شود. کیفیت پاسخ به retrieval، منبع، تازگی و grounding جداگانه وابسته است.</p>
+
+        <article class="method" id="lexical-rag"><header><span class="status live">اجراشده</span><h3>Lexical RAG / SQLite FTS5</h3></header><p>index معکوس عبارت‌های هم‌واژه را رتبه‌بندی می‌کند، سندهای برتر با شناسه و score ثبت می‌شوند و متن آن‌ها پیش از تولید به prompt اضافه می‌شود.</p><div class="flow"><span>query + corpus</span><i>←</i><span>FTS5 retrieve و inject</span><i>←</i><span>context بیرونی</span></div><p class="boundary">مرز پروژه: fixture بسته ابتدا facts همان درخواست را به سند world تبدیل و در همان world بازیابی می‌کند؛ این کشف دانش ناشناخته از corpus مستقل نیست.</p><p class="source"><a href="https://proceedings.neurips.cc/paper_files/paper/2020/hash/6b493230205f780e1bc26945df7481e5-Abstract.html" target="_blank" rel="noopener noreferrer">RAG, NeurIPS 2020 ↗</a></p></article>
+
+        <article class="method" id="dense-retrieval"><header><span class="status model">مدل تشریحی</span><h3>Dense Vector Retrieval</h3></header><p>دو encoder، query و passage را در فضای برداری می‌گذارند؛ inner product یا معیار شباهت، نزدیک‌ترین سندها را پیدا می‌کند. index تقریبی جست‌وجو را مقیاس‌پذیر می‌کند.</p><div class="flow"><span>query و passage</span><i>←</i><span>dual encoder + ANN</span><i>←</i><span>top-k passage</span></div><p class="boundary">مرز پروژه: embedding model و vector index وجود ندارند.</p><p class="source"><a href="https://aclanthology.org/2020.emnlp-main.550/" target="_blank" rel="noopener noreferrer">DPR, EMNLP 2020 ↗</a></p></article>
+
+        <article class="method" id="reranking-hybrid"><header><span class="status model">مدل تشریحی</span><h3>Hybrid Retrieval + Reranker</h3></header><p>sparse و dense retrieval recall متفاوتی می‌دهند؛ fusion دو فهرست را یکی می‌کند و cross-encoder زوج query-document را برای precision بیشتر دوباره امتیاز می‌دهد.</p><div class="flow"><span>کاندیداهای sparse+dense</span><i>←</i><span>fusion و rerank</span><i>←</i><span>شواهد مرتب</span></div><p class="boundary">مرز پروژه: RAG فقط یک مرحله FTS5 دارد.</p><p class="source"><a href="https://arxiv.org/abs/1901.04085" target="_blank" rel="noopener noreferrer">Passage Re-ranking with BERT ↗</a></p></article>
+
+        <article class="method" id="retrieval-memory"><header><span class="status read">مطالعه‌ای</span><h3>RETRO / حافظهٔ بلند</h3></header><p>پیشوند جاری برای یافتن chunkهای مشابه استفاده می‌شود و مدل با cross-attention یا recurrence روی آن حافظه شرطی می‌شود. منبع هر خاطره باید قابل‌ردیابی بماند.</p><div class="flow"><span>پیشوند + حافظه</span><i>←</i><span>retrieve و cross-attend</span><i>←</i><span>پیش‌بینی شرطی</span></div><p class="boundary">مرز پروژه: corpus facts کوچک است و policy حافظهٔ مکالمه یا RETRO ندارد.</p><p class="source"><a href="https://proceedings.mlr.press/v162/borgeaud22a.html" target="_blank" rel="noopener noreferrer">RETRO, ICML 2022 ↗</a> · <a href="https://aclanthology.org/P19-1285/" target="_blank" rel="noopener noreferrer">Transformer-XL ↗</a></p></article>
+      </section>
+
+      <section id="system">
+        <header><span>06</span><h2>ابزار، عامل و چندوجهی</h2></header>
+        <p class="family-note">اینجا model capability از host capability جدا می‌شود. اجرای API یا حفظ حافظه را میزبان انجام می‌دهد؛ مدل فقط می‌تواند action را پیشنهاد کند، آن هم اگر واقعاً برای این قرارداد آموزش یا prompt شده باشد.</p>
+
+        <article class="method" id="scripted-tools"><header><span class="status live">اجراشده</span><h3>Tool Use اسکریپتی</h3></header><p>controller قطعی AST را می‌خواند، نام ابزار allowlist و آرگومان را validate می‌کند، LOOKUP/CALC را در میزبان اجرا و observation را ثبت می‌کند.</p><div class="flow"><span>AST</span><i>←</i><span>validate و execute</span><i>←</i><span>نتیجهٔ خارجی</span></div><p class="boundary">مرز پروژه: مدل call را انتخاب یا تولید نمی‌کند؛ دقت مسیر tools توان model-only نیست.</p><p class="source"><a href="https://proceedings.neurips.cc/paper/2023/hash/d842425e4bf79ba039352da0f658a906-Abstract-Conference.html" target="_blank" rel="noopener noreferrer">Toolformer, NeurIPS 2023 ↗</a></p></article>
+
+        <article class="method" id="react-agents"><header><span class="status model">مدل تشریحی</span><h3>ReAct / Learned Tool Use</h3></header><p>مدل action و argument می‌سازد؛ میزبان آن را اعتبارسنجی و اجرا می‌کند؛ observation دوباره وارد context می‌شود. loop تا پاسخ یا سقف کنترل‌شده ادامه می‌یابد.</p><div class="flow"><span>هدف + مشاهده</span><i>←</i><span>reason، act، observe</span><i>←</i><span>پاسخ/action بعدی</span></div><p class="boundary">مرز پروژه: executor دارد، اما policy انتخاب ابزار و حلقهٔ model→tool→model ندارد.</p><p class="source"><a href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener noreferrer">ReAct, ICLR 2023 ↗</a></p></article>
+
+        <article class="method" id="multimodal"><header><span class="status read">مطالعه‌ای</span><h3>مدل چندوجهی</h3></header><p>encoder modalityهایی مانند تصویر یا صوت را به token/embedding تبدیل می‌کند. alignment یا fusion این نمایش‌ها را با زبان متصل و decoder پاسخ را تولید می‌کند.</p><div class="flow"><span>متن + تصویر/صوت</span><i>←</i><span>encode، align، fuse</span><i>←</i><span>پاسخ چندوجهی</span></div><p class="boundary">مرز پروژه: API و tokenizer فقط متن DSL و رقم دارند.</p><p class="source"><a href="https://proceedings.mlr.press/v139/radford21a.html" target="_blank" rel="noopener noreferrer">CLIP, ICML 2021 ↗</a></p></article>
+
+        <article class="method" id="agent-memory"><header><span class="status read">مطالعه‌ای</span><h3>عامل چندگامه و حافظهٔ پایدار</h3></header><p>ارکستریتور goal را به step تبدیل، state و provenance را ذخیره، ابزار/مدل را فراخوانی و بر اساس observation برنامه را بازنگری می‌کند. permission boundary جزء الگوریتم سامانه است.</p><div class="flow"><span>goal + state + permission</span><i>←</i><span>plan، execute، revise</span><i>←</i><span>state تازه/پایان</span></div><p class="boundary">مرز پروژه: هر solve مستقل است و برنامه‌ریز یا حافظهٔ پایدار کاربر ندارد.</p><p class="source"><a href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener noreferrer">ReAct ↗</a> · <a href="https://proceedings.neurips.cc/paper/2023/hash/271db9922b8d1f4dd7aaef84ed5ac703-Abstract.html" target="_blank" rel="noopener noreferrer">Tree of Thoughts ↗</a></p></article>
+      </section>
+
+      <section id="trace">
+        <header><span>07</span><h2>قرارداد trace</h2></header>
+        <p class="family-note">trace صفحه، دادهٔ ورودی، خروجی تولیدشده، telemetry و تصمیم میزبان را کنار هم می‌گذارد. scratchpad یا rationale تولیدشده، مشاهدهٔ رفتار است و به معنی دسترسی به فرایند علّی یا «فکر پنهان» نیست.</p>
+      </section>
+
+      <section id="telemetry">
+        <header><span>08</span><h2>قرارداد تله‌متری</h2></header>
+        <div class="audit-grid">
+          <article><h3>Token probability</h3><p>می‌گوید مدل در یک گام چه توکنی را چقدر ترجیح داد؛ علت نهایی آن ترجیح را ثابت نمی‌کند.</p></article>
+          <article><h3>Attention</h3><p>وزن اتصال محاسباتی میان موقعیت‌هاست؛ به‌تنهایی توضیح علّی یا اهمیت انسانی نیست.</p></article>
+          <article><h3>MoE routing</h3><p>expert فعال و احتمال gate را ثبت می‌کند؛ تخصص معنایی نیازمند probe و ablation مستقل است.</p></article>
+          <article><h3>Retrieval/tool log</h3><p>provenance کمک بیرونی را نشان می‌دهد و باید از توان وزن‌های مدل جدا گزارش شود.</p></article>
+        </div>
+      </section>
+
+      <section id="evaluation">
+        <header><span>09</span><h2>مقایسه و مرز ادعا</h2></header>
+        <p class="family-note">مقایسه معتبر به dataset و split یکسان، checkpoint/hash مشخص، seed، تعداد نمونه، معیار، latency و active/total parameters نیاز دارد. نتیجهٔ یک seed و مسئلهٔ میکرو را نمی‌توان به LLMهای بزرگ یا وظایف باز تعمیم داد.</p>
+      </section>
+
+      <section id="sources">
+        <header><span>10</span><h2>سیاست منابع علمی</h2></header>
+        <p class="family-note">همهٔ لینک‌های این صفحه به مقالهٔ اصلی، proceedings رسمی یا رکورد رسمی پژوهش هدایت می‌شوند. مقاله تعریف روش را پشتیبانی می‌کند؛ وجود مقاله شاهد اجرای محلی نیست. تاریخ بازبینی پیوندها: ۲۰۲۶-۰۸-۳۱.</p>
+      </section>
+    </main>
+
+    <footer>MICRO REASONING LAB · سند محلی و قابل‌بازتولید · مرز اجرا/شبیه‌سازی/مطالعه حفظ شده است.</footer>
+  </body>
+</html>

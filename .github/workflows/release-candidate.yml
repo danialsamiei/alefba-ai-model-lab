@@ -1,0 +1,60 @@
+name: Windows Release Candidate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  package:
+    name: Package, smoke, attest
+    runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: reasoning-lab/desktop
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: reasoning-lab/desktop/package-lock.json
+      - name: Install exact dependencies
+        run: npm ci
+      - name: Test and package unsigned portable EXE
+        run: npm run dist:win
+      - name: Verify PE, SHA-256, manifest, and signature state
+        run: npm run verify:release
+      - name: Smoke packaged application
+        shell: pwsh
+        run: |
+          $artifact = Get-ChildItem -LiteralPath release -Filter 'Alefba-AI-Model-Lab-*-Windows-x64.exe' | Select-Object -First 1
+          if (-not $artifact) { throw 'Portable EXE not found.' }
+          $launcher = Start-Process -FilePath $artifact.FullName -WindowStyle Hidden -PassThru
+          Start-Sleep -Seconds 15
+          $launcher.Refresh()
+          $children = Get-CimInstance Win32_Process | Where-Object { $_.Name -like 'Alefba AI Model Lab*.exe' }
+          if ($launcher.HasExited -or @($children).Count -lt 1) { throw 'Packaged application did not remain active.' }
+          Stop-Process -Id $launcher.Id -Force -ErrorAction SilentlyContinue
+          $children | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+      - name: Generate CycloneDX SBOM
+        shell: pwsh
+        run: npm sbom --sbom-format cyclonedx | Out-File -LiteralPath release/sbom.cdx.json -Encoding utf8
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@43d14bc2b83dec42d39ecae14e916627a18bb661 # v3
+        with:
+          subject-path: reasoning-lab/desktop/release/Alefba-AI-Model-Lab-*-Windows-x64.exe
+      - name: Upload release-candidate evidence
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: alefba-ai-model-lab-windows-release-candidate
+          path: |
+            reasoning-lab/desktop/release/Alefba-AI-Model-Lab-*-Windows-x64.exe
+            reasoning-lab/desktop/release/Alefba-AI-Model-Lab-*-Windows-x64.exe.sha256
+            reasoning-lab/desktop/release/release-manifest.json
+            reasoning-lab/desktop/release/sbom.cdx.json
+          if-no-files-found: error

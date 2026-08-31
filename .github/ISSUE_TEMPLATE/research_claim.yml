@@ -1,0 +1,29 @@
+name: Research claim correction
+description: Correct a source, boundary, model classification, or scientific claim.
+title: "[Evidence]: "
+labels: [documentation, evidence]
+body:
+  - type: input
+    id: claim
+    attributes:
+      label: Claim or concept identifier
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: What is inaccurate, outdated, or insufficiently bounded?
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Primary source URL
+      placeholder: https://...
+    validations:
+      required: true
+  - type: textarea
+    id: replacement
+    attributes:
+      label: Suggested correction and effective date
+

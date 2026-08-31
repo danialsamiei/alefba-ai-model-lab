@@ -1,0 +1,69 @@
+name: Reproducibility
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "41 2 * * 6"
+
+permissions:
+  contents: read
+
+jobs:
+  digit-full-run:
+    name: Digit LM / train from zero
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+      - name: Install exact dependencies
+        run: uv sync --frozen
+      - name: Build, pretrain, fine-tune, evaluate, and verify
+        run: uv run digit-lm run-lab --reset
+      - name: Upload evidence, not weights
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: digit-lm-reproducibility-evidence
+          path: |
+            artifacts/lab-report.json
+            artifacts/lab-report.md
+            artifacts/acceptance-report.md
+          if-no-files-found: error
+
+  reasoning-full-run:
+    name: Reasoning lab / rebuild five profiles
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: reasoning-lab
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+      - name: Install exact dependencies
+        run: uv sync --frozen
+      - name: Rebuild deterministic curriculum
+        run: uv run reasoning-lab build-data
+      - name: Confirm generated data matches the committed snapshot
+        run: git diff --exit-code -- data/generated
+      - name: Train, evaluate, and run acceptance gates
+        run: |
+          uv run reasoning-lab train-all
+          uv run reasoning-lab evaluate --limit 40
+          uv run reasoning-lab verify
+      - name: Upload evidence, not weights
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: reasoning-lab-reproducibility-evidence
+          path: |
+            reasoning-lab/artifacts/reports/acceptance-latest.json
+            reasoning-lab/artifacts/reports/ACCEPTANCE.md
+            reasoning-lab/artifacts/reports/latest-evaluation.json
+            reasoning-lab/artifacts/reports/evaluation-*.json
+          if-no-files-found: error

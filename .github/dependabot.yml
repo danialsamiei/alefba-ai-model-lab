@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      python-root:
+        patterns: ["*"]
+  - package-ecosystem: pip
+    directory: /reasoning-lab
+    schedule:
+      interval: weekly
+    groups:
+      python-reasoning-lab:
+        patterns: ["*"]
+  - package-ecosystem: npm
+    directory: /reasoning-lab/desktop
+    schedule:
+      interval: weekly
+    groups:
+      desktop-runtime:
+        patterns: ["*"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

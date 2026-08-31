@@ -1,0 +1,32 @@
+{
+  "dataset_id": "probe_successor_corrupt4_v1@1",
+  "generator_config": {
+    "corrupt": {
+      "4": "99"
+    },
+    "inputs": [
+      0,
+      9
+    ],
+    "optimizer_access": false,
+    "target_width": 2
+  },
+  "jsonl_sha256": "a3f35156d8d782706f1f5a284b717cd781e39e55b29f2be4170bf7407f2d56be",
+  "manifest_sha256": "4d669676116cbe95bf1f1b5c9753eed1fc15a59e82aeec662f7288dcac8e832d",
+  "name": "probe_successor_corrupt4_v1",
+  "purpose": "Locked corrupt-label probe for the negative control.",
+  "row_count": 10,
+  "row_sha256": [
+    "4ccb541b6d179f2e363f078e279749f4651df5503c3cf34065b254af72247441",
+    "d6914df5c71b7a705e210d02946f98070d7d34c933469d132ce1877151b05bd2",
+    "a5adac11df1a55b6b7730a9e4fa48c6a9d0e789554b599f776d1a8c2d2a45227",
+    "ad03f86a91223608e523507cf6cdfa281f1912f771ef6c927099c0f367bc104b",
+    "6153f8ef70422d6bf0a7ce522f01fc77c4e453c9da3831e8ec055da3b4d0279f",
+    "d68c0d3dd4866d942a7a13f51a4a97511a2c41ed2543b648bdc3c7f4a901f327",
+    "643fe2f8068ef32b4c3134a17d9abbf5e35bba2d9fe4e4849d06f9d19b8e02f7",
+    "8e9a230ef6eaaf4ff02a0e853b5d9b3839ff49a81cbafef0bd617df39a0efee6",
+    "877b1df32abc3834d9801a6125cab338d03cc95c2001cd89891deafde6e57433",
+    "ee3e344c32e6a60755e92741714220ce2c599f8d2ef3dda2ecf93b950b7fcb08"
+  ],
+  "version": 1
+}

@@ -1,0 +1,31 @@
+{
+  "dataset_id": "sft_corrupt4_full_v1@1",
+  "generator_config": {
+    "corrupt": {
+      "4": "99"
+    },
+    "inputs": [
+      0,
+      9
+    ],
+    "target_width": 2
+  },
+  "jsonl_sha256": "9371b1ab3ac30419da4eede180b26aed428e78202c71a496f5e55fc04f67428b",
+  "manifest_sha256": "a42700af0ab3cb77cc2bb4e2921b24360e49ea81f50966d0e06c311c83ba0c47",
+  "name": "sft_corrupt4_full_v1",
+  "purpose": "Negative control: label 4 as 99 to prove that data, not hidden code, drives output.",
+  "row_count": 10,
+  "row_sha256": [
+    "e5be6331e1a5cd3a4cec8a22261ed7321e8ca0ebef080120af2e4a998d4138bc",
+    "dbb5564de53723b733ee53e9b0fbc1b748d667b491a8dcd28a856721c0611332",
+    "b61ce2f1ba575781146fcebbafaccc3ad311521e8a8dc8e0182ad46fbb70ab3d",
+    "ba87d2acc7312a5cbde8f913492948f62f05768c74137f28fd7460afb1f6008a",
+    "541eab6079ff0545e8902ddb68a87d95d2f5d3a7542d03f8df861354ea729b7a",
+    "6abca789912a307cb923b97782b9573efccd836c10f240bc7d22b7310a5d4f20",
+    "e0e4ad0656aa41d7efd098292d47e5479c648649c3e89a0781531481036a0711",
+    "cf8122bd6b26bca6396c4e7e3195257eeb3750546ab185b5400360fb66da7324",
+    "97a2ee868540bca2b403a44b8c3c6e1e2bfb77e232784bbc0392672e3178529e",
+    "070ac4de7dbb960b0e7034c2270f0649ec605ef3fba220651e4f4bc62dd05677"
+  ],
+  "version": 1
+}

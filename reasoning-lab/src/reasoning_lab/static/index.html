@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>آزمایشگاه میکروسکوپی استدلال</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#workbench">پرش به میز آزمایش</a>
+    <div class="grain" aria-hidden="true"></div>
+    <header class="topbar">
+      <div class="identity">
+        <span class="identity__mark">µR</span>
+        <div>
+          <p class="eyebrow">MICRO REASONING LAB / 0.2 · LIVE ANATOMY</p>
+          <h1>آزمایشگاه میکروسکوپی استدلال</h1>
+        </div>
+      </div>
+      <div class="system-state" id="system-state" role="status">
+        <span class="pulse"></span>
+        <span>در حال بررسی سامانه…</span>
+      </div>
+    </header>
+
+    <main id="workbench" class="shell">
+      <section class="intro panel">
+        <div>
+          <p class="kicker">یک جهان کوچک؛ مرزها کاملاً دیده می‌شوند</p>
+          <h2>مدل دقیقاً کجا <em>یاد می‌گیرد</em> و کجا از بیرون کمک می‌گیرد؟</h2>
+        </div>
+        <div class="intro__aside">
+          <p class="intro__copy">
+            عبارت، توکن‌به‌توکن وارد مدل می‌شود. با تغییر معماری، effort، بازیابی و ابزار،
+            نتیجه و هزینه را کنار هم ببینید. scratchpad متن تولیدشده است، نه پنجره‌ای به
+            «فکر پنهان» مدل.
+          </p>
+          <div class="source-legend" aria-label="راهنمای رنگ منشأ اطلاعات">
+            <span data-source="data"><i></i>دادهٔ ورودی</span>
+            <span data-source="model"><i></i>محاسبهٔ مدل</span>
+            <span data-source="external"><i></i>کمک بیرونی</span>
+            <span data-source="host"><i></i>تصمیم میزبان</span>
+            <span data-source="reference"><i></i>مرجع ارزیابی</span>
+          </div>
+          <a class="atlas-jump" href="#method-map">دیدن اطلس روش‌های دیگر و شکاف‌های این آزمایشگاه ←</a>
+        </div>
+      </section>
+
+      <section class="architecture-strip panel" aria-labelledby="architecture-heading">
+        <div class="section-head">
+          <div>
+            <span class="index">01</span>
+            <h2 id="architecture-heading">مقایسهٔ پنج روش حل</h2>
+          </div>
+          <p>پیچیده‌تر لزوماً دقیق‌تر نیست.</p>
+        </div>
+        <div class="architecture-ladder" id="architecture-ladder">
+          <button class="arch active" data-model="ngram" aria-pressed="true">
+            <span class="arch__number">A</span><strong>N-gram</strong><small>حافظهٔ شمارشی</small>
+          </button>
+          <span class="connector" aria-hidden="true"></span>
+          <button class="arch" data-model="window_mlp" aria-pressed="false">
+            <span class="arch__number">B</span><strong>Window MLP</strong><small>پنجرهٔ ثابت</small>
+          </button>
+          <span class="connector" aria-hidden="true"></span>
+          <button class="arch" data-model="dense_direct" aria-pressed="false">
+            <span class="arch__number">C</span><strong>Transformer</strong><small>پاسخ مستقیم</small>
+          </button>
+          <span class="connector" aria-hidden="true"></span>
+          <button class="arch" data-model="dense_scratch" aria-pressed="false">
+            <span class="arch__number">D</span><strong>+ Scratchpad</strong><small>گام‌های مولد</small>
+          </button>
+          <span class="connector" aria-hidden="true"></span>
+          <button class="arch" data-model="moe_scratch" aria-pressed="false">
+            <span class="arch__number">E</span><strong>Sparse MoE</strong><small>مسیریابی خبره</small>
+          </button>
+        </div>
+
+        <details class="training-origin" open>
+          <summary>
+            <span>پیش از پاسخ‌گویی چه رخ داد؟</span>
+            <strong>مسیر داده → آموزش از صفر → checkpoint</strong>
+          </summary>
+          <p class="training-origin__note">
+            این پروژه مدل ازپیش‌آموزش‌دیده‌ای را fine-tune نمی‌کند؛ وزن‌های میکرو از مقداردهی
+            اولیهٔ تصادفی و روی curriculum مصنوعیِ برچسب‌خورده آموزش دیده‌اند. در آموزش scratch
+            کل payload هدف supervised است؛ هنگام inference قاب نحوی را میزبان ثابت می‌کند و مدل
+            فقط خانه‌های رقمی را نمونه‌گیری می‌کند.
+          </p>
+          <div class="training-flow" aria-label="جریان ساخت داده و آموزش مدل">
+            <article data-kind="host"><span>۱</span><b>مولد curriculum</b><small>seed ثابت و قواعد DSL</small></article>
+            <i>←</i>
+            <article data-kind="data"><span>۲</span><b id="training-total">۱٬۷۲۰ اپیزود</b><small>پنج split بدون نشت</small></article>
+            <i>←</i>
+            <article data-kind="data"><span>۳</span><b id="training-vocab">واژگان ثابت</b><small>بدون توکن ناشناخته</small></article>
+            <i>←</i>
+            <article data-kind="host"><span>۴</span><b id="training-examples">۵٬۱۶۰ مثال</b><small>direct / scratch / tool</small></article>
+            <i>←</i>
+            <article data-kind="model"><span>۵</span><b>loss + AdamW</b><small>روی target mask تعریف‌شده</small></article>
+            <i>←</i>
+            <article data-kind="model"><span>۶</span><b>۵ checkpoint</b><small>safetensors / hash</small></article>
+          </div>
+          <div class="training-ledger">
+            <div>
+              <h3>جداسازی داده</h3>
+              <table>
+                <thead><tr><th>Split</th><th>تعداد</th><th>برای چه چیزی؟</th><th>در gradient؟</th></tr></thead>
+                <tbody id="split-ledger"><tr><td colspan="4" class="empty">در حال خواندن manifest…</td></tr></tbody>
+              </table>
+            </div>
+            <div>
+              <h3>چه چیزی واقعاً یادگرفته شد؟</h3>
+              <table>
+                <thead><tr><th>جزء</th><th>آموختنی؟</th><th>محل</th></tr></thead>
+                <tbody>
+                  <tr><td>Embedding / Attention / MLP / Router</td><td class="status-pass">بله</td><td>وزن checkpoint</td></tr>
+                  <tr><td>Parser، حساب mod 10 و Oracle</td><td class="status-unavailable">خیر</td><td>کد میزبان</td></tr>
+                  <tr><td>کنترل‌گر Tools و ترتیب CALLها</td><td class="status-unavailable">خیر</td><td>کد اسکریپتی</td></tr>
+                  <tr><td>اسناد RAG و مقدارهای جهان جاری</td><td class="status-unavailable">خیر</td><td>SQLite / prompt</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="checkpoint-ledger">
+            <h3>دفتر checkpointهای همین اجرا</h3>
+            <div class="comparison-table-wrap">
+              <table>
+                <thead><tr><th>پروفایل</th><th>هدف آموزشی</th><th>پارامتر فعال / کل</th><th>هش وزن</th></tr></thead>
+                <tbody id="checkpoint-ledger"><tr><td colspan="4" class="empty">در حال خواندن registry…</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <div class="work-grid">
+        <section class="controls panel" aria-labelledby="controls-heading">
+          <div class="section-head compact">
+            <div><span class="index">02</span><h2 id="controls-heading">تنظیم آزمایش</h2></div>
+          </div>
+
+          <fieldset>
+            <legend>جهان واقعیت</legend>
+            <p class="field-note" id="fact-help">برای هر متغیر فقط یک عدد صحیح از ۰ تا ۹ وارد کنید.</p>
+            <div class="fact-grid" id="fact-grid">
+              <label>A <input type="number" inputmode="numeric" min="0" max="9" step="1" required value="3" data-fact="A" aria-label="مقدار A" aria-describedby="fact-help" /></label>
+              <label>B <input type="number" inputmode="numeric" min="0" max="9" step="1" required value="5" data-fact="B" aria-label="مقدار B" aria-describedby="fact-help" /></label>
+              <label>C <input type="number" inputmode="numeric" min="0" max="9" step="1" required value="2" data-fact="C" aria-label="مقدار C" aria-describedby="fact-help" /></label>
+              <label>D <input type="number" inputmode="numeric" min="0" max="9" step="1" required value="7" data-fact="D" aria-label="مقدار D" aria-describedby="fact-help" /></label>
+              <label>E <input type="number" inputmode="numeric" min="0" max="9" step="1" required value="1" data-fact="E" aria-label="مقدار E" aria-describedby="fact-help" /></label>
+              <label>F <input type="number" inputmode="numeric" min="0" max="9" step="1" required value="4" data-fact="F" aria-label="مقدار F" aria-describedby="fact-help" /></label>
+              <label>G <input type="number" inputmode="numeric" min="0" max="9" step="1" required value="9" data-fact="G" aria-label="مقدار G" aria-describedby="fact-help" /></label>
+              <label>H <input type="number" inputmode="numeric" min="0" max="9" step="1" required value="6" data-fact="H" aria-label="مقدار H" aria-describedby="fact-help" /></label>
+            </div>
+          </fieldset>
+
+          <label class="field">
+            <span>عبارت</span>
+            <input id="expression" value="MUL(ADD(A,B),C)" spellcheck="false" />
+          </label>
+
+          <fieldset>
+            <legend>منبع اطلاعات</legend>
+            <div class="segmented" id="mode-select">
+              <button data-value="model_only" class="selected" aria-pressed="true">فقط مدل</button>
+              <button data-value="rag" aria-pressed="false">RAG</button>
+              <button data-value="tools" aria-pressed="false">ابزار</button>
+              <button data-value="oracle" aria-pressed="false">Oracle</button>
+            </div>
+          </fieldset>
+
+          <fieldset id="effort-fieldset">
+            <legend>بودجهٔ پاسخ‌گویی مدل (effort)</legend>
+            <div class="effort-control" id="effort-select">
+              <button data-value="low" class="selected" aria-pressed="true"><span>کم</span><small>۱ کاندیدا</small></button>
+              <button data-value="medium" aria-pressed="false"><span>متوسط</span><small>۴ کاندیدا</small></button>
+              <button data-value="high" aria-pressed="false"><span>زیاد</span><small>۸ کاندیدا</small></button>
+            </div>
+            <p class="field-note" id="effort-note">checkpoint ثابت می‌ماند؛ مسیرهای بیشتر، بهبود کیفیت را تضمین نمی‌کند.</p>
+          </fieldset>
+
+          <button id="run-button" class="run-button">
+            <span>حل و نمایش مسیر</span><kbd>Ctrl ↵</kbd>
+          </button>
+          <p id="run-error" class="run-error" role="alert"></p>
+        </section>
+
+        <section class="stage panel" aria-labelledby="stage-heading">
+          <div class="section-head compact">
+            <div><span class="index">03</span><h2 id="stage-heading">مقطع اجرای مدل</h2></div>
+            <span class="run-id" id="run-id">RUN —</span>
+          </div>
+
+          <div class="equation-board" role="status" aria-live="polite">
+            <div><span class="label">ورودی</span><code id="input-expression">MUL(ADD(A,B),C)</code></div>
+            <span class="arrow">←</span>
+            <div><span class="label">پاسخ منتخب</span><strong id="final-answer">؟</strong></div>
+          </div>
+
+          <div class="pipeline" id="pipeline" aria-label="مراحل اجرای قابل انتخاب">
+            <button class="pipe-node" data-stage="problem"><span>۱</span><b>صورت مسئله</b><small>داده</small></button>
+            <div class="pipe-line"><i></i></div>
+            <button class="pipe-node" data-stage="tokenize"><span>۲</span><b>توکن‌سازی</b><small>—</small></button>
+            <div class="pipe-line"><i></i></div>
+            <button class="pipe-node" data-stage="context"><span>۳</span><b>ساخت زمینه</b><small>خاموش</small></button>
+            <div class="pipe-line"><i></i></div>
+            <button class="pipe-node" data-stage="model"><span>۴</span><b>درون مدل</b><small>N-gram</small></button>
+            <div class="pipe-line"><i></i></div>
+            <button class="pipe-node" data-stage="generate"><span>۵</span><b>تولید</b><small>۱ مسیر</small></button>
+            <div class="pipe-line"><i></i></div>
+            <button class="pipe-node" data-stage="select"><span>۶</span><b>انتخاب</b><small>میزبان</small></button>
+            <div class="pipe-line"><i></i></div>
+            <button class="pipe-node" data-stage="result"><span>۷</span><b>نتیجه</b><small>بررسی</small></button>
+          </div>
+
+          <div class="telemetry-grid">
+            <article class="telemetry">
+              <span>توکن مولد</span><strong id="tokens-count">۰</strong><small>generated tokens</small>
+            </article>
+            <article class="telemetry">
+              <span>عبور مدل</span><strong id="forward-count">۰</strong><small>forward passes</small>
+            </article>
+            <article class="telemetry">
+              <span>زمان</span><strong id="latency">۰</strong><small>میلی‌ثانیه</small>
+            </article>
+            <article class="telemetry">
+              <span>بررسی‌گر</span><strong id="verifier-count">۰</strong><small>verifier passes</small>
+            </article>
+          </div>
+
+          <div class="trace-console">
+            <div class="trace-console__head">
+              <span>خروجی مولد / scratchpad</span>
+              <span class="truth-badge" id="protocol-badge">منتظر اجرا</span>
+            </div>
+            <ol id="trace-steps">
+              <li class="placeholder">پس از اجرا، هر گام و منشأ آن اینجا ظاهر می‌شود.</li>
+            </ol>
+          </div>
+        </section>
+      </div>
+
+      <section class="journey panel" aria-labelledby="journey-heading">
+        <div class="section-head journey__head">
+          <div><span class="index">04</span><h2 id="journey-heading">اطلس زندهٔ یک تصمیم</h2></div>
+          <p>هر مرحله را انتخاب کنید؛ ورودی، عمل، خروجی و مرز ادعا کنار هم نمایش داده می‌شوند.</p>
+        </div>
+
+        <div class="journey-status" role="status" aria-live="polite">
+          <span class="journey-status__beam" aria-hidden="true"><i></i></span>
+          <p id="journey-status-text">آزمایش را اجرا کنید تا مسیر واقعی این نمونه ترسیم شود.</p>
+        </div>
+
+        <div class="journey-layout">
+          <nav class="journey-rail" id="journey-rail" aria-label="فهرست مراحل تصمیم">
+            <button data-journey="problem" class="active" aria-current="step">
+              <span>۰۱</span><b>صورت مسئله</b><small>جهان، عبارت و وابستگی‌ها</small>
+            </button>
+            <button data-journey="tokenize">
+              <span>۰۲</span><b>توکن‌سازی</b><small>متن ← شناسه‌های عددی</small>
+            </button>
+            <button data-journey="context">
+              <span>۰۳</span><b>ساخت زمینه</b><small>مدل، RAG، ابزار یا Oracle</small>
+            </button>
+            <button data-journey="model">
+              <span>۰۴</span><b>محاسبهٔ معماری</b><small>الگوریتم فعال و ظرفیت</small>
+            </button>
+            <button data-journey="generate">
+              <span>۰۵</span><b>تولید گام‌ها</b><small>احتمال، scratchpad و مسیرها</small>
+            </button>
+            <button data-journey="select">
+              <span>۰۶</span><b>انتخاب و راستی‌آزمایی</b><small>قانون رتبه‌بندی کاندیداها</small>
+            </button>
+            <button data-journey="result">
+              <span>۰۷</span><b>نتیجه و برداشت</b><small>پاسخ، مرجع و برداشت درست</small>
+            </button>
+          </nav>
+
+          <article class="journey-detail" id="journey-detail" tabindex="-1">
+            <header class="journey-detail__head">
+              <div>
+                <span class="source-badge" id="stage-source">دادهٔ ورودی</span>
+                <p class="eyebrow" id="stage-code">STAGE / 01</p>
+                <h3 id="stage-title">صورت مسئله چگونه ساخته می‌شود؟</h3>
+              </div>
+              <p id="stage-summary">واقعیت‌های جهان و ساختار عبارت، پیش از ورود به مدل از هم تفکیک می‌شوند.</p>
+            </header>
+
+            <div class="io-triptych" aria-label="ورودی، اقدام و خروجی مرحله">
+              <section><span>ورودی این مرحله</span><strong id="stage-input">واقعیت‌ها + عبارت</strong></section>
+              <i aria-hidden="true">←</i>
+              <section class="action"><span>اقدام یا الگوریتم</span><strong id="stage-action">تجزیهٔ عبارت به درخت</strong></section>
+              <i aria-hidden="true">←</i>
+              <section><span>خروجی این مرحله</span><strong id="stage-output">نقشهٔ وابستگی</strong></section>
+            </div>
+
+            <div class="stage-canvas" id="stage-canvas">
+              <p class="empty">پس از اولین اجرا، شکل این مرحله با دادهٔ واقعی ترسیم می‌شود.</p>
+            </div>
+
+            <div class="stage-explanation">
+              <div>
+                <h4>توضیح کیفی</h4>
+                <p id="stage-explanation">A تا H واقعیت‌های جهان‌اند. عبارت فقط بعضی از آن‌ها را مصرف می‌کند؛ بقیه distractor هستند.</p>
+              </div>
+              <div class="claim-card">
+                <h4>از این شکل چه می‌فهمیم؟</h4>
+                <p id="stage-claim">این شکل ساختار مسئله را نشان می‌دهد، نه اینکه مدل واقعاً آن را به همین صورت درون خود نمایش داده باشد.</p>
+              </div>
+            </div>
+
+            <div class="stage-table-wrap">
+              <div class="stage-table-title">
+                <h4 id="stage-table-title">جدول روابط</h4>
+                <span id="stage-table-count">۰ ردیف</span>
+              </div>
+              <div id="stage-table"><p class="empty">داده‌ای برای جدول ثبت نشده است.</p></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="microscope panel" aria-labelledby="microscope-heading">
+        <div class="section-head">
+          <div><span class="index">05</span><h2 id="microscope-heading">میکروسکوپ تله‌متری</h2></div>
+          <div class="tabs" role="tablist" aria-label="نماهای تله‌متری" id="telemetry-tabs">
+            <button id="tab-probabilities" role="tab" aria-selected="true" aria-controls="panel-probabilities" tabindex="0" data-tab="probabilities">گزینه‌های توکن</button>
+            <button id="tab-attention" role="tab" aria-selected="false" aria-controls="panel-attention" tabindex="-1" data-tab="attention">نقشهٔ توجه</button>
+            <button id="tab-routing" role="tab" aria-selected="false" aria-controls="panel-routing" tabindex="-1" data-tab="routing">مسیریابی خبره‌ها</button>
+            <button id="tab-external" role="tab" aria-selected="false" aria-controls="panel-external" tabindex="-1" data-tab="external">کمک بیرونی</button>
+          </div>
+        </div>
+
+        <div class="tab-panel active" id="panel-probabilities" role="tabpanel" aria-labelledby="tab-probabilities" data-panel="probabilities">
+          <div class="viz-copy">
+            <h3>در هر گام، مدل چه توکنی را محتمل‌تر می‌دانست؟</h3>
+            <p>ارتفاع نوار احتمال پیش‌بینی است؛ علت قطعی تصمیم نیست.</p>
+          </div>
+          <div class="token-probs" id="token-probs"><p class="empty">داده‌ای ثبت نشده است.</p></div>
+        </div>
+
+        <div class="tab-panel" id="panel-attention" role="tabpanel" aria-labelledby="tab-attention" data-panel="attention" hidden>
+          <div class="viz-copy">
+            <h3>نقشهٔ توجه</h3>
+            <p>هر خانه شدت اتصال یک توکن خروجی به توکن‌های قبلی را نشان می‌دهد؛ این نقشه تفسیر علّی نیست.</p>
+          </div>
+          <div class="attention-wrap" id="attention-map"><p class="empty">این معماری attention ندارد یا هنوز اجرا نشده است.</p></div>
+        </div>
+
+        <div class="tab-panel" id="panel-routing" role="tabpanel" aria-labelledby="tab-routing" data-panel="routing" hidden>
+          <div class="viz-copy">
+            <h3>مسیریابی Sparse MoE</h3>
+            <p>توکن‌ها به expert محاسباتی انتخاب‌شده می‌روند؛ expert «عامل» یا «ذهن» مستقل نیست.</p>
+          </div>
+          <div class="expert-grid" id="expert-grid">
+            <div class="expert"><span>E0</span><i style="--load:0%"></i><small>۰ توکن</small></div>
+            <div class="expert"><span>E1</span><i style="--load:0%"></i><small>۰ توکن</small></div>
+            <div class="expert"><span>E2</span><i style="--load:0%"></i><small>۰ توکن</small></div>
+            <div class="expert"><span>E3</span><i style="--load:0%"></i><small>۰ توکن</small></div>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="panel-external" role="tabpanel" aria-labelledby="tab-external" data-panel="external" hidden>
+          <div class="external-grid">
+            <article>
+              <div class="external-title"><span>RAG</span><small>بازیابی بیرون از وزن‌ها</small></div>
+              <div id="retrieval-hits" class="event-list"><p class="empty">بازیابی خاموش است.</p></div>
+            </article>
+            <article>
+              <div class="external-title"><span>TOOLS</span><small>اجرا توسط میزبان</small></div>
+              <div id="tool-calls" class="event-list"><p class="empty">ابزار خاموش است.</p></div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="comparison panel" aria-labelledby="comparison-heading">
+        <div class="section-head">
+          <div><span class="index">06</span><h2 id="comparison-heading">مقایسهٔ منصفانه</h2></div>
+          <p>نتیجه‌ها بر اساس منبع توانایی از هم جدا می‌شوند.</p>
+        </div>
+        <div class="comparison-table-wrap">
+          <table>
+            <thead><tr><th>مدل / حالت</th><th>IID هم‌توزیع (n=40)</th><th>عمق خارج آموزش (n=40)</th><th>RAG holdout (n=40)</th><th>پارامتر فعال / کل</th><th>وضعیت</th></tr></thead>
+            <tbody id="comparison-body"><tr><td colspan="6" class="empty">پس از ارزیابی مدل‌ها پر می‌شود.</td></tr></tbody>
+          </table>
+        </div>
+        <div class="effort-report">
+          <div>
+            <h3>هزینه/کیفیت effort روی یک checkpoint ثابت؛ n=12</h3>
+            <p>دقت، اعتبار پروتکل، forward pass و زمان را کنار هم بخوانید؛ مسیر بیشتر تضمین بهبود نیست.</p>
+          </div>
+          <div class="effort-cards" id="effort-cards"><p class="empty">پس از ارزیابی effort پر می‌شود.</p></div>
+        </div>
+      </section>
+
+      <section class="method-map panel" id="method-map" aria-labelledby="method-map-heading">
+        <div class="section-head method-map__head">
+          <div><span class="index">07</span><h2 id="method-map-heading">اطلس روش‌هایی که هنوز روی میز نبودند</h2></div>
+          <p>یک نقشهٔ انتخاب‌پذیر از معماری تا حافظه؛ با مرز روشنِ اجرا و شبیه‌سازی.</p>
+        </div>
+
+        <div class="evidence-key" aria-label="راهنمای وضعیت روش‌ها">
+          <span data-status="live"><i></i><b>اجراشده</b> کد، وزن یا مسیر واقعی در همین پروژه</span>
+          <span data-status="model"><i></i><b>مدل تشریحی</b> شبیه‌سازی تعاملی، بدون ادعای پیاده‌سازی</span>
+          <span data-status="read"><i></i><b>مطالعه‌ای</b> نقشهٔ مفهومی و منبع علمی</span>
+        </div>
+
+        <div class="method-toolbar" aria-label="فیلتر اطلس روش‌ها">
+          <div class="method-filters" id="method-filters" role="group" aria-label="خانوادهٔ روش">
+            <button class="selected" data-method-filter="all" aria-pressed="true">همه</button>
+            <button data-method-filter="architecture" aria-pressed="false">معماری</button>
+            <button data-method-filter="training" aria-pressed="false">آموزش و انطباق</button>
+            <button data-method-filter="inference" aria-pressed="false">استنتاج و reasoning</button>
+            <button data-method-filter="knowledge" aria-pressed="false">دانش و حافظه</button>
+            <button data-method-filter="system" aria-pressed="false">سامانه و چندوجهی</button>
+          </div>
+          <p id="method-count" role="status" aria-live="polite">در حال ساخت نقشه…</p>
+        </div>
+
+        <div class="method-layout">
+          <div class="method-grid" id="method-grid" aria-label="فهرست روش‌ها"></div>
+
+          <article class="method-detail" id="method-detail" aria-live="polite" tabindex="-1">
+            <header>
+              <div>
+                <span class="method-status" id="method-detail-status" data-status="live">اجراشده</span>
+                <p class="eyebrow" id="method-detail-code">ARCHITECTURE / NGRAM</p>
+                <h3 id="method-detail-title">N-gram / مدل شمارشی</h3>
+              </div>
+              <p id="method-detail-summary">ادامهٔ محتمل را از فراوانی چند توکن قبلی برمی‌گزیند.</p>
+            </header>
+
+            <div class="method-flow" aria-label="ورودی، سازوکار و خروجی روش">
+              <section><span>ورودی</span><strong id="method-detail-input">چند توکن اخیر</strong></section>
+              <i aria-hidden="true">←</i>
+              <section class="operation"><span>سازوکار</span><strong id="method-detail-operation">جدول شمارش شرطی</strong></section>
+              <i aria-hidden="true">←</i>
+              <section><span>خروجی</span><strong id="method-detail-output">توزیع توکن بعدی</strong></section>
+            </div>
+
+            <div class="method-detail__notes">
+              <section>
+                <h4>در همین آزمایشگاه چه وضعی دارد؟</h4>
+                <p id="method-detail-boundary"></p>
+              </section>
+              <section>
+                <h4>فایده و هزینه</h4>
+                <p id="method-detail-tradeoff"></p>
+              </section>
+            </div>
+
+            <footer class="method-links">
+              <a id="method-doc-link" href="/static/docs/methods.html#ngram">توضیح مفصل در doc</a>
+              <span id="method-source-links"></span>
+            </footer>
+          </article>
+        </div>
+      </section>
+
+      <section class="sampling-lab panel" id="sampling-lab" aria-labelledby="sampling-heading">
+        <div class="section-head sampling-lab__head">
+          <div><span class="index">08</span><h2 id="sampling-heading">تونل بادِ Prompt و Decoding</h2></div>
+          <p>یک منبع ده‌رقمی ثابت؛ هر پارامتر را جدا تغییر دهید و اثرش را تا قرعهٔ نهایی دنبال کنید.</p>
+        </div>
+
+        <div class="sampling-provenance" aria-label="مرز ادعای شبیه‌ساز">
+          <span class="sampling-badge" data-kind="live">ALGORITHM LIVE</span>
+          <p><strong>منبع کنترل‌شده:</strong> logits این بخش از checkpoint بالا نیامده‌اند. موتور، جانشین رقم ورودی را عمداً محتمل‌تر می‌کند تا اثر پارامترها از کیفیت مدل جدا دیده شود.</p>
+          <code dir="ltr">source → additive penalties → repetition → temperature → top-k → top-p → min-p → typical-p → ε → η → sample</code>
+        </div>
+
+        <div class="sampling-presets" role="group" aria-label="پروفایل‌های آمادهٔ نمونه‌گیری">
+          <button type="button" data-sampling-preset="deterministic">قطعی / Greedy</button>
+          <button type="button" data-sampling-preset="balanced" class="selected">متعادل</button>
+          <button type="button" data-sampling-preset="creative">پراکندگی بیشتر</button>
+          <button type="button" data-sampling-preset="anti-repeat">ضدتکرار</button>
+          <button type="button" data-sampling-preset="edge">لبهٔ فیلترها</button>
+        </div>
+
+        <div class="sampling-workbench">
+          <form class="sampling-controls" id="sampling-form">
+            <fieldset class="sampling-control-group">
+              <legend>۱ / منبع و حافظهٔ قابل‌مشاهده</legend>
+              <div class="sampling-control-grid sampling-control-grid--compact">
+                <div class="sampling-control" data-parameter="source-digit">
+                  <header><label for="sampling-current-digit">رقم ورودی</label><span data-parameter-info="source-digit"></span></header>
+                  <input id="sampling-current-digit" name="current_digit" type="number" inputmode="numeric" min="0" max="9" step="1" value="4" />
+                  <p>منبع، رقم بعدیِ چرخه را قلهٔ توزیع می‌گذارد: <output id="sampling-expected" for="sampling-current-digit">۵</output>.</p>
+                </div>
+                <div class="sampling-control" data-parameter="history">
+                  <header><label for="sampling-history">تاریخچهٔ ارقام</label><span data-parameter-info="history"></span></header>
+                  <input id="sampling-history" name="history" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="64" value="11234" dir="ltr" aria-describedby="sampling-history-note" />
+                  <p id="sampling-history-note">پنالتی‌ها فقط همین رشته را می‌شمارند؛ رقم فارسی پذیرفته نمی‌شود.</p>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="sampling-control-group">
+              <legend>۲ / مداخله روی logit پیش از softmax</legend>
+              <div class="sampling-control-grid">
+                <div class="sampling-control" data-parameter="presence-penalty">
+                  <header><label for="sampling-presence">Presence</label><output id="sampling-presence-value" for="sampling-presence">۰٫۰۰</output><span data-parameter-info="presence-penalty"></span></header>
+                  <input id="sampling-presence" name="presence_penalty" type="range" min="-2" max="2" step="0.05" value="0" dir="ltr" />
+                  <p>آیا قبلاً آمده؟ فقط صفر یا یک.</p>
+                </div>
+                <div class="sampling-control" data-parameter="frequency-penalty">
+                  <header><label for="sampling-frequency">Frequency</label><output id="sampling-frequency-value" for="sampling-frequency">۰٫۰۰</output><span data-parameter-info="frequency-penalty"></span></header>
+                  <input id="sampling-frequency" name="frequency_penalty" type="range" min="-2" max="2" step="0.05" value="0" dir="ltr" />
+                  <p>چند بار آمده؟ متناسب با شمارش.</p>
+                </div>
+                <div class="sampling-control" data-parameter="repetition-penalty">
+                  <header><label for="sampling-repetition">Repetition</label><output id="sampling-repetition-value" for="sampling-repetition">۱٫۰۰</output><span data-parameter-info="repetition-penalty"></span></header>
+                  <input id="sampling-repetition" name="repetition_penalty" type="range" min="0.1" max="2" step="0.05" value="1" dir="ltr" />
+                  <p>قرارداد علامت‌حساس؛ ۱ خنثی است.</p>
+                </div>
+                <div class="sampling-control sampling-control--bias" data-parameter="logit-bias">
+                  <header><label for="sampling-bias">Logit bias</label><output id="sampling-bias-value" for="sampling-bias">۰٫۰۰</output><span data-parameter-info="logit-bias"></span></header>
+                  <div><label for="sampling-bias-digit">روی رقم</label><select id="sampling-bias-digit" name="bias_digit" dir="ltr"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option selected>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></div>
+                  <input id="sampling-bias" name="logit_bias" type="range" min="-5" max="5" step="0.1" value="0" dir="ltr" />
+                  <p>یک امتیاز جمع‌شونده روی token ID.</p>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="sampling-control-group">
+              <legend>۳ / شکل‌دهی و بریدن توزیع</legend>
+              <div class="sampling-control-grid">
+                <div class="sampling-control" data-parameter="temperature">
+                  <header><label for="sampling-temperature">Temperature</label><output id="sampling-temperature-value" for="sampling-temperature">۰٫۸۰</output><span data-parameter-info="temperature"></span></header>
+                  <input id="sampling-temperature" name="temperature" type="range" min="0" max="2" step="0.05" value="0.8" dir="ltr" />
+                  <p>صفر = greedy؛ بیشتر = توزیع تخت‌تر.</p>
+                </div>
+                <div class="sampling-control" data-parameter="top-k">
+                  <header><label for="sampling-top-k">Top-k توکن</label><output id="sampling-top-k-value" for="sampling-top-k">۵</output><span data-parameter-info="top-k"></span></header>
+                  <input id="sampling-top-k" name="top_k" type="range" min="0" max="10" step="1" value="5" dir="ltr" />
+                  <p>صفر = خاموش؛ k گزینهٔ اول می‌ماند.</p>
+                </div>
+                <div class="sampling-control" data-parameter="top-p">
+                  <header><label for="sampling-top-p">Top-p / Nucleus</label><output id="sampling-top-p-value" for="sampling-top-p">۰٫۹۰</output><span data-parameter-info="top-p"></span></header>
+                  <input id="sampling-top-p" name="top_p" type="range" min="0.05" max="1" step="0.01" value="0.9" dir="ltr" />
+                  <p>کوچک‌ترین پیشوند با جرم حداقل p.</p>
+                </div>
+                <div class="sampling-control" data-parameter="min-p">
+                  <header><label for="sampling-min-p">Min-p</label><output id="sampling-min-p-value" for="sampling-min-p">خاموش</output><span data-parameter-info="min-p"></span></header>
+                  <input id="sampling-min-p" name="min_p" type="range" min="0" max="1" step="0.01" value="0" dir="ltr" />
+                  <p>کف نسبی به احتمال بهترین گزینه.</p>
+                </div>
+              </div>
+
+              <details class="sampling-advanced">
+                <summary>فیلترهای پیشرفته‌تر: typical، epsilon و eta</summary>
+                <div class="sampling-control-grid">
+                  <div class="sampling-control" data-parameter="typical-p">
+                    <header><label for="sampling-typical-p">Typical-p</label><output id="sampling-typical-p-value" for="sampling-typical-p">۱٫۰۰</output><span data-parameter-info="typical-p"></span></header>
+                    <input id="sampling-typical-p" name="typical_p" type="range" min="0.05" max="1" step="0.01" value="1" dir="ltr" />
+                    <p>نزدیکی surprise هر توکن به آنتروپی.</p>
+                  </div>
+                  <div class="sampling-control" data-parameter="epsilon-cutoff">
+                    <header><label for="sampling-epsilon">Epsilon</label><output id="sampling-epsilon-value" for="sampling-epsilon">خاموش</output><span data-parameter-info="epsilon-cutoff"></span></header>
+                    <input id="sampling-epsilon" name="epsilon_cutoff" type="range" min="0" max="0.5" step="0.005" value="0" dir="ltr" />
+                    <p>کف احتمال مطلق.</p>
+                  </div>
+                  <div class="sampling-control" data-parameter="eta-cutoff">
+                    <header><label for="sampling-eta">Eta</label><output id="sampling-eta-value" for="sampling-eta">خاموش</output><span data-parameter-info="eta-cutoff"></span></header>
+                    <input id="sampling-eta" name="eta_cutoff" type="range" min="0" max="0.5" step="0.005" value="0" dir="ltr" />
+                    <p>کف پویا بر پایهٔ آنتروپی.</p>
+                  </div>
+                </div>
+              </details>
+            </fieldset>
+
+            <fieldset class="sampling-control-group">
+              <legend>۴ / بازتولید آزمایش</legend>
+              <div class="sampling-control-grid sampling-control-grid--compact">
+                <div class="sampling-control" data-parameter="seed">
+                  <header><label for="sampling-seed">Seed</label><span data-parameter-info="seed"></span></header>
+                  <input id="sampling-seed" name="seed" type="number" min="0" max="4294967295" step="1" value="20260831" dir="ltr" />
+                  <p>روی توزیع اثر ندارد؛ قرعه را قابل تکرار می‌کند.</p>
+                </div>
+                <div class="sampling-control" data-parameter="sample-count">
+                  <header><label for="sampling-count">Drawهای histogram</label><output id="sampling-count-value" for="sampling-count">۱٬۰۰۰</output><span data-parameter-info="sample-count"></span></header>
+                  <input id="sampling-count" name="sample_count" type="range" min="100" max="2000" step="100" value="1000" dir="ltr" />
+                  <p>بازنمونه‌گیری از یک snapshot؛ نه forward pass تازه.</p>
+                </div>
+              </div>
+            </fieldset>
+
+            <button class="sampling-run" id="sampling-run" type="submit"><span>محاسبهٔ ده مرحله</span><small>POST /api/sampling-lab</small></button>
+            <p id="sampling-run-status" class="sampling-run-status" role="status" aria-live="polite">آمادهٔ آزمایش</p>
+          </form>
+
+          <div class="sampling-viewport" id="sampling-viewport" aria-busy="false">
+            <div class="sampling-result-strip">
+              <article><span>رقم مورد انتظار</span><strong id="sampling-expected-result">۵</strong><small>از منبع مصنوعی</small></article>
+              <article class="selected"><span>نمونهٔ انتخاب‌شده</span><strong id="sampling-selected">—</strong><small id="sampling-draw">u = —</small></article>
+              <article><span>گزینهٔ مؤثر</span><strong id="sampling-effective">—</strong><small>exp(entropy)</small></article>
+              <article><span>بازمانده</span><strong id="sampling-survivors">—</strong><small>از ۱۰ رقم</small></article>
+            </div>
+
+            <div class="sampling-tabs" id="sampling-tabs" role="tablist" aria-label="سطح توضیح نمونه‌گیری">
+              <button id="sampling-tab-intuitive" type="button" role="tab" aria-controls="sampling-panel-intuitive" aria-selected="true" tabindex="0">سطح ۱ / شهودی</button>
+              <button id="sampling-tab-process" type="button" role="tab" aria-controls="sampling-panel-process" aria-selected="false" tabindex="-1">سطح ۲ / فرآیندی</button>
+              <button id="sampling-tab-formula" type="button" role="tab" aria-controls="sampling-panel-formula" aria-selected="false" tabindex="-1">سطح ۳ / فرمولی</button>
+            </div>
+
+            <section class="sampling-panel" id="sampling-panel-intuitive" role="tabpanel" aria-labelledby="sampling-tab-intuitive">
+              <div class="sampling-insight" id="sampling-insight">دما و فیلترها را تغییر دهید تا توزیعِ یک منبع ثابت جابه‌جا شود.</div>
+              <div class="sampling-figures">
+                <figure>
+                  <figcaption><strong>احتمال نظریِ قرعهٔ بعدی</strong><span>جمع ستون‌ها = ۱</span></figcaption>
+                  <div class="sampling-chart-scroll"><ol class="digit-chart" id="sampling-final-chart" aria-label="توزیع نهایی ده رقم"></ol></div>
+                </figure>
+                <figure>
+                  <figcaption><strong>فراوانی تجربی</strong><span id="sampling-histogram-caption">از ۱٬۰۰۰ draw؛ بدون اجرای دوبارهٔ مدل</span></figcaption>
+                  <div class="sampling-chart-scroll"><ol class="digit-chart empirical" id="sampling-histogram" aria-label="هیستوگرام نمونه‌ها"></ol></div>
+                </figure>
+              </div>
+            </section>
+
+            <section class="sampling-panel" id="sampling-panel-process" role="tabpanel" aria-labelledby="sampling-tab-process" hidden>
+              <ol class="sampling-flow" id="sampling-flow" aria-label="مراحل تبدیل توزیع"></ol>
+              <article class="sampling-stage-detail">
+                <header><div><span id="sampling-stage-kind">STAGE</span><h3 id="sampling-stage-title">—</h3></div><code id="sampling-stage-formula" dir="ltr">—</code></header>
+                <p id="sampling-stage-explanation">—</p>
+                <div class="sampling-chart-scroll"><ol class="digit-chart stage" id="sampling-stage-chart" aria-label="توزیع مرحلهٔ انتخاب‌شده"></ol></div>
+              </article>
+            </section>
+
+            <section class="sampling-panel" id="sampling-panel-formula" role="tabpanel" aria-labelledby="sampling-tab-formula" hidden>
+              <div class="formula-stack" id="sampling-formulas" aria-label="الگوریتم فرمولی">
+                <code dir="ltr">z′ᵢ = zᵢ + biasᵢ − presence·𝟙[cᵢ&gt;0] − frequency·cᵢ</code>
+                <code dir="ltr">seen: z&lt;0 ? z·repetition : z/repetition</code>
+                <code dir="ltr">T=0 → argmax(z) ; T&gt;0 → softmax(z/T)</code>
+                <code dir="ltr">Top-p = smallest ranked S where Σᵢ∈S pᵢ ≥ p</code>
+                <code dir="ltr">x = first token where u &lt; cumulative(P)</code>
+              </div>
+              <div class="sampling-table-wrap">
+                <table id="sampling-token-table">
+                  <thead><tr><th scope="col">رقم</th><th scope="col">logit خام</th><th scope="col">پس از پنالتی</th><th scope="col">احتمال نهایی</th><th scope="col">وضعیت</th></tr></thead>
+                  <tbody><tr><td colspan="5" class="empty">پس از محاسبه پر می‌شود.</td></tr></tbody>
+                </table>
+              </div>
+            </section>
+
+            <div class="sampling-warnings" id="sampling-warnings" role="note"></div>
+          </div>
+        </div>
+
+        <section class="parameter-atlas" aria-labelledby="parameter-atlas-heading">
+          <header>
+            <div><p class="eyebrow">CONTROL PLANE ATLAS / 24 KNOBS</p><h3 id="parameter-atlas-heading">هر «پارامتر» دقیقاً کجای سامانه اثر می‌گذارد؟</h3></div>
+            <p>Prompt، مدل، decoding، RAG و ابزار یک سطح نیستند. کارت‌ها را باز کنید تا سازوکار، مرز و منبع هرکدام را ببینید.</p>
+          </header>
+          <div class="parameter-legend" aria-label="راهنمای وضعیت پارامترها">
+            <span data-kind="live">محاسبه‌شده در همین صفحه</span>
+            <span data-kind="orchestrator">کنترل میزبان/درخواست</span>
+            <span data-kind="vendor">وابسته به مدل یا API</span>
+            <span data-kind="observe">مشاهده‌گر؛ نه کنترل</span>
+          </div>
+          <div class="parameter-grid" id="parameter-grid"></div>
+        </section>
+
+        <section class="interaction-map" aria-labelledby="interaction-heading">
+          <header><h3 id="interaction-heading">ماتریس رابطه‌ها؛ چرا پیچاندن هم‌زمان همهٔ knobها بدفهمی می‌سازد؟</h3><p>روی هر خانه بزنید؛ رابطه با متن توضیح داده می‌شود، نه فقط رنگ.</p></header>
+          <div class="interaction-table-wrap"><table id="interaction-matrix"></table></div>
+          <p id="interaction-note" role="status">یک رابطه را انتخاب کنید.</p>
+        </section>
+      </section>
+
+      <section class="boundary-note">
+        <span>یادآوری آزمایشگاه</span>
+        <p>رفتار صحیح ≠ اثبات فرایند ذهنی. تله‌متری ≠ توضیح علّی. Oracle ≠ توانایی مدل.</p>
+      </section>
+    </main>
+
+    <footer>
+      <span>MICRO REASONING LAB</span>
+      <span>همه‌چیز محلی، قطعی و قابل‌بازتولید</span>
+    </footer>
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>

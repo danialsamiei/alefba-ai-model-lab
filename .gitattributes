@@ -1,0 +1,14 @@
+* text=auto eol=lf
+
+# Reproducibility-critical generated text must remain byte-identical on Windows.
+*.jsonl text eol=lf
+*.json text eol=lf
+*.sha256 text eol=lf
+SHA256SUMS text eol=lf
+
+# Binary assets must never receive newline normalization.
+*.png binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.exe binary

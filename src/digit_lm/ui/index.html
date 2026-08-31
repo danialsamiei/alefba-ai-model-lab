@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#191a17" />
+    <title>میکروسکوپ مدل ده‌رقمی</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23191a17'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-size='40' fill='%23b9d96b'%3E9%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <div class="paper-grain" aria-hidden="true"></div>
+    <header class="masthead">
+      <div class="identity">
+        <span class="eyebrow">DIGIT LM / BENCH № 10</span>
+        <h1>میکروسکوپِ مدل زبانی</h1>
+        <p>تمام جهان این مدل فقط ده نشانه است: <bdi>0 1 2 3 4 5 6 7 8 9</bdi></p>
+      </div>
+      <div class="machine-state" aria-live="polite">
+        <span id="status-light" class="status-light"></span>
+        <div>
+          <span class="label">وضعیت دستگاه</span>
+          <strong id="machine-status">در حال اتصال…</strong>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="causal-bench" aria-labelledby="bench-title">
+        <div class="bench-copy">
+          <span class="section-index">A / INFERENCE</span>
+          <h2 id="bench-title">یک رقم را وارد کن؛ دو توکن خام را ببین.</h2>
+          <p>
+            مدل EOS ندارد. همیشه دو رقم تولید می‌کند؛ برای نمونه خروجی خام
+            <bdi>05</bdi> در نمایش انسانی برابر <bdi>5</bdi> است.
+          </p>
+        </div>
+
+        <div class="result-instrument">
+          <div class="readout readout-input">
+            <span class="readout-label">INPUT</span>
+            <output id="input-readout">4</output>
+          </div>
+          <div class="signal-path" aria-hidden="true">
+            <span></span><i></i><i></i><i></i><span></span>
+          </div>
+          <div class="readout readout-output">
+            <span class="readout-label">NEXT</span>
+            <output id="output-readout">—</output>
+            <small>RAW <bdi id="raw-readout">--</bdi></small>
+          </div>
+        </div>
+
+        <div class="digit-rail" role="group" aria-label="انتخاب رقم ورودی">
+          <span class="rail-label">VOCAB / INPUT SELECTOR</span>
+          <div id="digit-keypad" class="digit-keypad"></div>
+        </div>
+
+        <div id="correctness-stamp" class="correctness-stamp" aria-live="polite">
+          منتظر اندازه‌گیری
+        </div>
+      </section>
+
+      <section class="instrument-grid" aria-label="خروجی‌های میکروسکوپی مدل">
+        <article class="panel probability-panel">
+          <header class="panel-heading">
+            <div>
+              <span class="section-index">B / SOFTMAX SPECTRUM</span>
+              <h2>طیف احتمالِ هر ده توکن</h2>
+            </div>
+            <p>هر ستون نتیجهٔ softmax روی ده logit است.</p>
+          </header>
+          <div id="probability-spectrum" class="probability-spectrum loading-block"></div>
+        </article>
+
+        <aside class="panel anatomy-panel">
+          <span class="section-index">MODEL SPECIMEN</span>
+          <h2>شناسنامهٔ نمونه</h2>
+          <dl id="model-anatomy" class="spec-list"></dl>
+          <div class="vocab-seal">
+            <span>VOCAB</span>
+            <strong>10</strong>
+            <small>NO SPECIAL TOKENS</small>
+          </div>
+        </aside>
+
+        <article class="panel steps-panel">
+          <header class="panel-heading">
+            <div>
+              <span class="section-index">C / AUTOREGRESSIVE TRACE</span>
+              <h2>دو ضربانِ تولید</h2>
+            </div>
+            <p>ضربان دوم، توکن تولیدشدهٔ اول را دوباره به context می‌دهد.</p>
+          </header>
+          <div id="generation-steps" class="generation-steps loading-block"></div>
+        </article>
+
+        <article class="panel attention-panel">
+          <header class="panel-heading">
+            <div>
+              <span class="section-index">D / CAUSAL ATTENTION</span>
+              <h2>صفحه‌های توجه</h2>
+            </div>
+            <p>ردیف‌ها query و ستون‌ها key هستند؛ خانهٔ آینده باید صفر بماند.</p>
+          </header>
+          <div class="attention-note">
+            <b>هشدار علمی:</b> attention تله‌متری است، نه اثبات استدلال. در ضربان اول، ماتریس
+            <bdi>1×1</bdi> الزاماً برابر یک است.
+          </div>
+          <div id="attention-matrices" class="attention-matrices loading-block"></div>
+        </article>
+
+        <article class="panel vectors-panel">
+          <header class="panel-heading">
+            <div>
+              <span class="section-index">E / ACTIVATION MICROSCOPE</span>
+              <h2>اثر انگشتِ بردارها و نورسنجِ لایه‌ها</h2>
+            </div>
+            <p>Embedding، Q/K/V، residual، MLP، logit lens و سهم ابعاد logit.</p>
+          </header>
+          <div id="vector-microscope" class="vector-microscope loading-block"></div>
+        </article>
+
+        <article class="panel logits-panel">
+          <header class="panel-heading">
+            <div>
+              <span class="section-index">F / RAW LOGITS</span>
+              <h2>اعداد قبل از softmax</h2>
+            </div>
+            <p>بزرگ‌ترین logit با greedy decoding انتخاب می‌شود.</p>
+          </header>
+          <div id="logit-tables" class="logit-tables loading-block"></div>
+        </article>
+      </section>
+
+      <section class="context-lab" aria-labelledby="context-title">
+        <div class="context-copy">
+          <span class="section-index">G / CONTEXT PROBE</span>
+          <h2 id="context-title">context را از یک تا هشت رقم باز کن.</h2>
+          <p>
+            این بخش قرارداد «عدد بعدی» نیست؛ پنجره‌ای است برای دیدن رفتار next-token روی
+            الگوهای آشنا و ناآشنا.
+          </p>
+        </div>
+        <form id="context-form" class="context-form">
+          <label for="context-input">رشتهٔ آزمایش</label>
+          <div>
+            <input
+              id="context-input"
+              name="context"
+              value="01234567"
+              maxlength="8"
+              inputmode="numeric"
+              pattern="[0-9]{1,8}"
+              autocomplete="off"
+            />
+            <button type="submit">پروب کن</button>
+          </div>
+          <p id="context-result" class="context-result" aria-live="polite">—</p>
+        </form>
+      </section>
+
+      <section class="notebook" aria-labelledby="notebook-title">
+        <header class="notebook-heading">
+          <div>
+            <span class="section-index">H / SQLITE LAB NOTEBOOK</span>
+            <h2 id="notebook-title">دفتر داده، آموزش و کنترل‌های منفی</h2>
+          </div>
+          <p>وزن‌ها در فایل امن Safetensors هستند؛ SQLite فقط provenance و نتیجه‌ها را نگه می‌دارد.</p>
+        </header>
+        <div id="experiment-cards" class="experiment-cards loading-block"></div>
+        <div class="dataset-table-wrap">
+          <table>
+            <thead>
+              <tr><th>دیتاست</th><th>هدف</th><th>ردیف</th><th>SHA-256</th></tr>
+            </thead>
+            <tbody id="dataset-table"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        این دستگاه سازوکارهای LLM را در مقیاس میکرو نشان می‌دهد؛ موفقیت آن نشانهٔ فهم زبان،
+        حساب نمادین یا استدلال عمومی نیست.
+      </p>
+      <div id="provenance-line" class="provenance-line">CHECKPOINT / …</div>
+    </footer>
+  </body>
+</html>

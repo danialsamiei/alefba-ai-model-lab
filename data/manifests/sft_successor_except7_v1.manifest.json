@@ -1,0 +1,30 @@
+{
+  "dataset_id": "sft_successor_except7_v1@1",
+  "generator_config": {
+    "excluded_inputs": [
+      7
+    ],
+    "inputs": [
+      0,
+      9
+    ],
+    "target_width": 2
+  },
+  "jsonl_sha256": "d474327666572de8776898fd4fe442338db52bc7a9dd76b04fdf59903f0d4597",
+  "manifest_sha256": "60364797ef221993db3d89dfdbca6f18216c8588fd43adac046792863c71a4d6",
+  "name": "sft_successor_except7_v1",
+  "purpose": "Known-token mapping control: digit 7 exists in pretraining but its successor mapping is absent from supervised fine-tuning.",
+  "row_count": 9,
+  "row_sha256": [
+    "e5be6331e1a5cd3a4cec8a22261ed7321e8ca0ebef080120af2e4a998d4138bc",
+    "dbb5564de53723b733ee53e9b0fbc1b748d667b491a8dcd28a856721c0611332",
+    "b61ce2f1ba575781146fcebbafaccc3ad311521e8a8dc8e0182ad46fbb70ab3d",
+    "ba87d2acc7312a5cbde8f913492948f62f05768c74137f28fd7460afb1f6008a",
+    "a6b706f0c6dabcdd445d38578f54a2b5105b46d00dec683c78f934202bf1ba54",
+    "6abca789912a307cb923b97782b9573efccd836c10f240bc7d22b7310a5d4f20",
+    "e0e4ad0656aa41d7efd098292d47e5479c648649c3e89a0781531481036a0711",
+    "97a2ee868540bca2b403a44b8c3c6e1e2bfb77e232784bbc0392672e3178529e",
+    "070ac4de7dbb960b0e7034c2270f0649ec605ef3fba220651e4f4bc62dd05677"
+  ],
+  "version": 1
+}

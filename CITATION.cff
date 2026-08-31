@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this software or its educational materials, please cite it using this metadata."
+title: "alef.ba AI Architecture and Reasoning Lab"
+type: software
+version: 0.5.0
+date-released: 2026-08-31
+authors:
+  - family-names: "Samiei"
+    given-names: "Danial"
+license: MIT
+abstract: >-
+  An open educational laboratory for inspecting, simulating, comparing, and
+  designing artificial-intelligence model architectures, inference methods,
+  context systems, retrieval, tools, and agent orchestration.
+keywords:
+  - artificial intelligence
+  - language models
+  - transformer
+  - diffusion
+  - mixture of experts
+  - retrieval augmented generation
+  - AI agents
+  - context engineering
+  - model visualization
+  - deterministic simulation
+  - Persian education
+url: "https://alef.ba"
+repository-code: "https://github.com/danialsamiei/alefba-ai-model-lab"

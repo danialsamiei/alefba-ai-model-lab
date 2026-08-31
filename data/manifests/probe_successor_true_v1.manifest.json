@@ -1,0 +1,30 @@
+{
+  "dataset_id": "probe_successor_true_v1@1",
+  "generator_config": {
+    "corrupt": {},
+    "inputs": [
+      0,
+      9
+    ],
+    "optimizer_access": false,
+    "target_width": 2
+  },
+  "jsonl_sha256": "5c1f0f46acef177fb4be5c0bf0226a13605b858b171df6a77251d7283386d4eb",
+  "manifest_sha256": "b04a7ec27c02e498c4185d4405c0cf27b6712d802a6004ff4164db9b5d855e12",
+  "name": "probe_successor_true_v1",
+  "purpose": "Locked true-successor probe, loaded only after optimization.",
+  "row_count": 10,
+  "row_sha256": [
+    "4ccb541b6d179f2e363f078e279749f4651df5503c3cf34065b254af72247441",
+    "d6914df5c71b7a705e210d02946f98070d7d34c933469d132ce1877151b05bd2",
+    "a5adac11df1a55b6b7730a9e4fa48c6a9d0e789554b599f776d1a8c2d2a45227",
+    "ad03f86a91223608e523507cf6cdfa281f1912f771ef6c927099c0f367bc104b",
+    "61fb70386733790cec0487a8dd0e3e6021331401d31538e721d9d8cab9eb99e0",
+    "d68c0d3dd4866d942a7a13f51a4a97511a2c41ed2543b648bdc3c7f4a901f327",
+    "643fe2f8068ef32b4c3134a17d9abbf5e35bba2d9fe4e4849d06f9d19b8e02f7",
+    "8e9a230ef6eaaf4ff02a0e853b5d9b3839ff49a81cbafef0bd617df39a0efee6",
+    "877b1df32abc3834d9801a6125cab338d03cc95c2001cd89891deafde6e57433",
+    "ee3e344c32e6a60755e92741714220ce2c599f8d2ef3dda2ecf93b950b7fcb08"
+  ],
+  "version": 1
+}

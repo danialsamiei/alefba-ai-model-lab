@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>راهنمای پارامترهای Prompt و Decoding</title>
+    <style>
+      :root { color-scheme: dark; --ink:#e9eee7; --muted:#9ba59d; --paper:#101411; --line:#334037; --acid:#b9f227; --cyan:#62d9ce; --orange:#f39a53; --mono:"Cascadia Code",monospace; }
+      * { box-sizing:border-box; } html { scroll-behavior:smooth; } body { margin:0; background:var(--paper); color:var(--ink); font-family:"Segoe UI",Tahoma,sans-serif; line-height:1.9; }
+      header, main, footer { width:min(1040px,calc(100% - 2rem)); margin:auto; } body>header { padding:3rem 0 1.5rem; border-bottom:1px solid var(--line); }
+      h1 { margin:.35rem 0; font-size:clamp(1.8rem,4vw,3.3rem); } h2 { margin-top:2.5rem; } h3 { margin:.2rem 0; } p { color:#c0c8c1; }
+      .eyebrow { color:var(--acid); font: .7rem var(--mono); letter-spacing:.1em; } .lead { max-width:780px; }
+      nav { display:flex; flex-wrap:wrap; gap:.45rem; margin-top:1.2rem; } nav a, article a, footer a { color:var(--cyan); text-underline-offset:.25rem; }
+      nav a { border:1px solid var(--line); padding:.3rem .55rem; text-decoration:none; font-size:.72rem; }
+      .contract { border:1px solid var(--line); box-shadow:inset 0 3px var(--acid); padding:1rem; margin-top:1rem; }
+      .flow { direction:ltr; display:flex; gap:.35rem; overflow:auto; padding:.8rem 0; list-style:none; }
+      .flow li { direction:rtl; flex:0 0 150px; min-height:92px; border:1px solid var(--line); padding:.6rem; display:grid; align-content:center; }
+      .flow span { color:var(--cyan); font:.56rem var(--mono); } .flow strong { font-size:.72rem; } code { direction:ltr; color:var(--cyan); font-family:var(--mono); overflow-wrap:anywhere; }
+      table { border-collapse:collapse; width:100%; min-width:720px; } .table-wrap { overflow:auto; } th,td { border-bottom:1px solid var(--line); padding:.65rem; text-align:right; font-size:.72rem; } th { color:var(--muted); }
+      .docs { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.7rem; }
+      article { scroll-margin-top:1rem; border:1px solid var(--line); padding:1rem; min-width:0; } article:target { border-color:var(--acid); box-shadow:inset 0 2px var(--acid); }
+      article header { width:auto; margin:0; padding:0 0 .6rem; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; gap:1rem; }
+      article header span { color:var(--orange); font:.56rem var(--mono); } article p { margin:.6rem 0; font-size:.78rem; }
+      article dl { display:grid; grid-template-columns:auto 1fr; gap:.25rem .7rem; font-size:.7rem; } article dt { color:var(--muted); } article dd { margin:0; }
+      .boundary { color:#e5b58d; } footer { margin-top:2rem; padding:1.5rem 0 3rem; border-top:1px solid var(--line); }
+      @media(max-width:720px){ .docs{grid-template-columns:1fr;} .flow{padding-bottom:1rem;} }
+    </style>
+  </head>
+  <body>
+    <header>
+      <p class="eyebrow">MICRO REASONING LAB / PARAMETER FIELD MANUAL</p>
+      <h1>راهنمای پارامترهای Prompt، Decoding، Reasoning و RAG</h1>
+      <p class="lead">این سند «پارامتر» را یک واژهٔ واحد فرض نمی‌کند. بعضی موارد متن ورودی را می‌سازند، بعضی logits را تغییر می‌دهند، بعضی مجموعهٔ کاندیدا را می‌بُرند، بعضی سقف هزینه‌اند و بعضی فقط تله‌متری هستند.</p>
+      <nav aria-label="دسترسی سریع">
+        <a href="#contract">قرارداد موتور</a><a href="#temperature">Temperature</a><a href="#top-k">Top-k</a><a href="#top-p">Top-p</a><a href="#penalty-comparison">مقایسهٔ پنالتی‌ها</a><a href="#reasoning-effort">Reasoning effort</a><a href="#retrieval-controls">RAG</a>
+      </nav>
+    </header>
+    <main>
+      <section class="contract" id="contract">
+        <h2>قرارداد دقیق این شبیه‌ساز</h2>
+        <p>واژگان فقط <code>0..9</code> است. موتور یک توزیع مصنوعی و قابل‌کنترل می‌سازد که در آن جانشین رقم ورودی بالاترین logit را دارد. این توزیع خروجی checkpoint نیست؛ هدف، جداسازی اثر decoding از توانایی مدل است.</p>
+        <ol class="flow">
+          <li><span>01 / SOURCE</span><strong>logits کنترل‌شده</strong></li>
+          <li><span>02 / ADD</span><strong>bias + presence + frequency</strong></li>
+          <li><span>03 / REPEAT</span><strong>repetition علامت‌حساس</strong></li>
+          <li><span>04 / SCALE</span><strong>temperature</strong></li>
+          <li><span>05–09 / FILTER</span><strong>k → p → min → typical → ε/η</strong></li>
+          <li><span>10 / DRAW</span><strong>SplitMix64 + categorical</strong></li>
+        </ol>
+        <p><code>z′ᵢ = zᵢ + biasᵢ − presence·𝟙[cᵢ&gt;0] − frequency·cᵢ</code></p>
+        <p><code>T=0 ⇒ argmax(z′) ; T&gt;0 ⇒ softmax(z′/T)</code></p>
+        <p class="boundary">ترتیب بالا قرارداد محلی <code>sampling-lab-v1</code> است. هیچ ادعایی ندارد که ترتیب OpenAI، Hugging Face، vLLM یا موتور دیگری را عیناً بازسازی می‌کند.</p>
+      </section>
+
+      <section id="penalty-comparison">
+        <h2>یک نگاه: سه پنالتی که نباید یکی گرفته شوند</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>کنترل</th><th>چه چیزی را می‌بیند؟</th><th>فرمول این آزمایشگاه</th><th>مقدار خنثی</th></tr></thead>
+          <tbody>
+            <tr><td>Presence</td><td>آیا توکن آمده؟</td><td><code>−α·𝟙[c&gt;0]</code></td><td><code>0</code></td></tr>
+            <tr><td>Frequency</td><td>چند بار آمده؟</td><td><code>−β·c</code></td><td><code>0</code></td></tr>
+            <tr><td>Repetition</td><td>آمده + علامت logit</td><td><code>z&lt;0 ? z·r : z/r</code></td><td><code>1</code></td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <h2>اطلس ۲۴ کنترل</h2>
+      <section class="docs">
+        <article id="prompt-layers"><header><h3>System / Developer / User</h3><span>PROMPT</span></header><p>لایه‌های پیام هدف، زمینه و محدودیت را پیش از inference به توکن تبدیل می‌کنند. این‌ها multiplier احتمالات نیستند.</p><dl><dt>جریان</dt><dd><code>roles → chat template → context</code></dd><dt>مرز</dt><dd class="boundary">تقدم دقیق نقش‌ها محصول‌محور است؛ پیروی کامل تضمین نمی‌شود.</dd></dl><a href="https://developers.openai.com/api/docs/guides/prompt-engineering" target="_blank" rel="noopener noreferrer">راهنمای رسمی Prompting ↗</a></article>
+        <article id="instruction-layout"><header><h3>چیدمان دستور و delimiter</h3><span>PROMPT</span></header><p>تفکیک صریح دستور، داده، مثال و قالب خروجی ambiguity را کم می‌کند چون context دیگری به مدل می‌دهد.</p><dl><dt>جریان</dt><dd><code>sections → tokens → logits</code></dd><dt>مرز</dt><dd class="boundary">delimiter به‌تنهایی دفاع قطعی در برابر prompt injection نیست.</dd></dl><a href="https://developers.openai.com/api/docs/guides/prompt-engineering" target="_blank" rel="noopener noreferrer">راهنمای رسمی Prompting ↗</a></article>
+        <article id="few-shot"><header><h3>Zero-shot / Few-shot</h3><span>PROMPT</span></header><p>نمونه‌ها الگوی رفتار را در context نشان می‌دهند؛ وزن‌های مدل تغییر نمی‌کند.</p><dl><dt>جریان</dt><dd><code>examples → in-context conditioning</code></dd><dt>مرز</dt><dd class="boundary">In-context learning همان fine-tuning نیست.</dd></dl><a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noopener noreferrer">GPT-3 / In-context learning ↗</a></article>
+        <article id="context-budget"><header><h3>Context window / truncation</h3><span>PROMPT</span></header><p>اگر یک دستور یا سند پس از tokenization و truncation بیرون پنجره بیفتد، مدل آن را نمی‌بیند.</p><dl><dt>جریان</dt><dd><code>tokenize → budget → visible prefix</code></dd><dt>مرز</dt><dd class="boundary">پنجرهٔ بزرگ‌تر تضمین استفادهٔ مؤثر یا حقیقت بیشتر نیست.</dd></dl><a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener noreferrer">Transformer ↗</a></article>
+        <article id="structured-output"><header><h3>Schema / Grammar</h3><span>PROMPT + DECODING</span></header><p>parser state در هر گام tokenهای مجاز را تعیین و بقیه را mask می‌کند.</p><dl><dt>جریان</dt><dd><code>grammar state → token mask</code></dd><dt>مرز</dt><dd class="boundary">ساختار معتبر می‌تواند از نظر معنا نادرست باشد.</dd></dl><a href="https://aclanthology.org/2023.emnlp-main.674/" target="_blank" rel="noopener noreferrer">Grammar-Constrained Decoding ↗</a></article>
+        <article id="temperature"><header><h3>Temperature</h3><span>LIVE</span></header><p>تقسیم logits بر T نسبت احتمال‌ها را تغییر می‌دهد: T پایین‌تر قله‌ها را تیزتر و T بالاتر توزیع را تخت‌تر می‌کند.</p><dl><dt>فرمول</dt><dd><code>p=softmax(z/T)</code></dd><dt>مرز</dt><dd class="boundary"><code>T=0</code> در این صفحه shorthand برای greedy است.</dd></dl><a href="https://huggingface.co/docs/transformers/main/en/main_classes/text_generation" target="_blank" rel="noopener noreferrer">HF GenerationConfig ↗</a></article>
+        <article id="top-k"><header><h3>Top-k توکن</h3><span>LIVE</span></header><p>k توکن پراحتمال را نگه می‌دارد و بقیه احتمال صفر می‌گیرند.</p><dl><dt>واحد</dt><dd>توکن در یک decoding step</dd><dt>مرز</dt><dd class="boundary">با retrieval top-k که واحدش سند است فرق دارد.</dd></dl><a href="https://huggingface.co/docs/transformers/main/en/main_classes/text_generation" target="_blank" rel="noopener noreferrer">HF GenerationConfig ↗</a></article>
+        <article id="top-p"><header><h3>Top-p / Nucleus</h3><span>LIVE</span></header><p>توکن‌ها نزولی مرتب می‌شوند و کوچک‌ترین پیشوند با جرم تجمعی حداقل p باقی می‌ماند.</p><dl><dt>فرمول</dt><dd><code>min S: Σᵢ∈S pᵢ ≥ p</code></dd><dt>مرز</dt><dd class="boundary">اندازهٔ S پویاست و factuality را تضمین نمی‌کند.</dd></dl><a href="https://openreview.net/pdf?id=rygGQyrFvH" target="_blank" rel="noopener noreferrer">Nucleus Sampling، ICLR 2020 ↗</a></article>
+        <article id="min-p"><header><h3>Min-p</h3><span>LIVE</span></header><p>هر گزینه با احتمال کمتر از ضریبی از بهترین احتمال حذف می‌شود.</p><dl><dt>فرمول</dt><dd><code>pᵢ ≥ m·max(p)</code></dd><dt>مرز</dt><dd class="boundary">تعریف روشن است؛ برتری عمومی کیفیت اثبات قطعی ندارد.</dd></dl><a href="https://arxiv.org/abs/2407.01082" target="_blank" rel="noopener noreferrer">Min-p ↗</a> · <a href="https://arxiv.org/abs/2506.13681" target="_blank" rel="noopener noreferrer">بازتحلیل انتقادی ↗</a></article>
+        <article id="typical-p"><header><h3>Locally Typical</h3><span>LIVE</span></header><p>توکن‌ها بر حسب نزدیکی information content به آنتروپی شرطی مرتب می‌شوند.</p><dl><dt>فرمول</dt><dd><code>|−log pᵢ − H(p)|</code></dd><dt>مرز</dt><dd class="boundary">مزیت تجربی به مدل و تکلیف وابسته است.</dd></dl><a href="https://aclanthology.org/2023.tacl-1.7/" target="_blank" rel="noopener noreferrer">Locally Typical Sampling ↗</a></article>
+        <article id="epsilon-eta"><header><h3>Epsilon / Eta</h3><span>LIVE</span></header><p>Epsilon کف مطلق احتمال و eta کف تطبیقی بر پایهٔ آنتروپی می‌سازد.</p><dl><dt>فرمول eta</dt><dd><code>min(η,√η·e⁻ᴴ)</code></dd><dt>مرز</dt><dd class="boundary">بهترین توکن در قرارداد محلی همیشه حفظ می‌شود.</dd></dl><a href="https://aclanthology.org/2022.findings-emnlp.249/" target="_blank" rel="noopener noreferrer">Truncation Sampling ↗</a></article>
+        <article id="presence-penalty"><header><h3>Presence penalty</h3><span>LIVE</span></header><p>برای توکنی که حداقل یک‌بار دیده شده یک مقدار ثابت از logit کم می‌کند.</p><dl><dt>فرمول</dt><dd><code>−α·𝟙[c&gt;0]</code></dd><dt>مرز</dt><dd class="boundary">scope تاریخچه و بازه vendor-specific است.</dd></dl><a href="https://developers.openai.com/api/reference/java/resources/chat/subresources/completions/methods/create" target="_blank" rel="noopener noreferrer">OpenAI Chat API ↗</a></article>
+        <article id="frequency-penalty"><header><h3>Frequency penalty</h3><span>LIVE</span></header><p>جریمه را در تعداد دفعات تکرار ضرب می‌کند؛ تکرار سوم بیش از تکرار اول جریمه می‌شود.</p><dl><dt>فرمول</dt><dd><code>−β·count</code></dd><dt>مرز</dt><dd class="boundary">شباهت معنایی را مستقیم اندازه نمی‌گیرد.</dd></dl><a href="https://developers.openai.com/api/reference/java/resources/chat/subresources/completions/methods/create" target="_blank" rel="noopener noreferrer">OpenAI Chat API ↗</a></article>
+        <article id="repetition-penalty"><header><h3>Repetition penalty</h3><span>LIVE</span></header><p>قرارداد علامت‌حساس رایج، logit مثبت را تقسیم و logit منفی را ضرب می‌کند.</p><dl><dt>فرمول</dt><dd><code>z&lt;0 ? z·r : z/r</code></dd><dt>مرز</dt><dd class="boundary">با presence/frequency هم‌معنی نیست.</dd></dl><a href="https://huggingface.co/docs/transformers/main/en/internal/generation_utils" target="_blank" rel="noopener noreferrer">HF logits processors ↗</a></article>
+        <article id="logit-bias"><header><h3>Logit bias</h3><span>LIVE</span></header><p>bias به امتیاز token ID افزوده می‌شود و سپس همراه بقیهٔ logits وارد pipeline می‌شود.</p><dl><dt>فرمول</dt><dd><code>zᵢ←zᵢ+bᵢ</code></dd><dt>مرز</dt><dd class="boundary">کلمه ممکن است چند token ID داشته باشد.</dd></dl><a href="https://developers.openai.com/api/reference/java/resources/chat/subresources/completions/methods/create" target="_blank" rel="noopener noreferrer">OpenAI Chat API ↗</a></article>
+        <article id="seed"><header><h3>Seed / determinism</h3><span>LIVE</span></header><p>در موتور محلی، SplitMix64 از seed عدد یکنواخت می‌سازد و همان توزیع و seed همان draw را می‌دهد.</p><dl><dt>جریان</dt><dd><code>seed→u→categorical</code></dd><dt>مرز</dt><dd class="boundary">در API واقعی معمولاً فقط best-effort است.</dd></dl><a href="https://docs.pytorch.org/docs/stable/notes/randomness.html" target="_blank" rel="noopener noreferrer">PyTorch reproducibility ↗</a></article>
+        <article id="max-output"><header><h3>Max output tokens</h3><span>LENGTH</span></header><p>یک سقف سخت برای حلقهٔ تولید است و می‌تواند پاسخ را پیش از کامل‌شدن قطع کند.</p><dl><dt>اثر</dt><dd>هزینه و طول بیشینه</dd><dt>مرز</dt><dd class="boundary">با دستور اختصار و verbosity یکی نیست.</dd></dl><a href="https://developers.openai.com/api/reference/cli/resources/responses/methods/create" target="_blank" rel="noopener noreferrer">OpenAI Responses API ↗</a></article>
+        <article id="stop"><header><h3>Stop sequences</h3><span>LENGTH</span></header><p>پس از append، suffix خروجی با رشته‌های stop مقایسه و در صورت match تولید متوقف می‌شود.</p><dl><dt>جریان</dt><dd><code>append→match→finish</code></dd><dt>مرز</dt><dd class="boundary">توقف رشته‌ای پایان منطقی پاسخ را تضمین نمی‌کند.</dd></dl><a href="https://huggingface.co/docs/transformers/main/en/main_classes/text_generation" target="_blank" rel="noopener noreferrer">HF GenerationConfig ↗</a></article>
+        <article id="candidate-budget"><header><h3>n / best-of / self-consistency</h3><span>REASONING</span></header><p>چند generation مستقل ساخته و با vote یا verifier یک پاسخ انتخاب می‌شود.</p><dl><dt>واحد</dt><dd>مسیر کامل، نه token</dd><dt>مرز</dt><dd class="boundary">هزینه بیشتر است و بهبود تضمین نمی‌شود.</dd></dl><a href="https://arxiv.org/abs/2203.11171" target="_blank" rel="noopener noreferrer">Self-Consistency ↗</a></article>
+        <article id="reasoning-effort"><header><h3>Reasoning effort</h3><span>VENDOR</span></header><p>بودجه یا سیاست محاسبهٔ مدل reasoning است و از sampling temperature جداست.</p><dl><dt>اثر</dt><dd>compute / latency / tokens</dd><dt>مرز</dt><dd class="boundary">مدل‌محور است؛ effort بیشتر تضمین صحت یا نمایش فکر پنهان نیست.</dd></dl><a href="https://developers.openai.com/api/docs/guides/latest-model" target="_blank" rel="noopener noreferrer">OpenAI model guide ↗</a></article>
+        <article id="verbosity"><header><h3>Verbosity</h3><span>VENDOR</span></header><p>گرایش پاسخ به اختصار یا تفصیل را هدایت می‌کند و با سقف سخت tokenها فرق دارد.</p><dl><dt>اثر</dt><dd>سبک و میزان شرح</dd><dt>مرز</dt><dd class="boundary">semantics و پشتیبانی مدل‌محور است.</dd></dl><a href="https://developers.openai.com/api/docs/guides/latest-model" target="_blank" rel="noopener noreferrer">OpenAI model guide ↗</a></article>
+        <article id="tool-controls"><header><h3>Tool choice / parallel / max calls</h3><span>HOST</span></header><p>سیاست میزبان مشخص می‌کند کدام پیشنهاد ابزار مجاز، اجباری، موازی یا محدود باشد.</p><dl><dt>جریان</dt><dd><code>proposal→policy→execution</code></dd><dt>مرز</dt><dd class="boundary">ابزار بیرون مدل اجرا می‌شود؛ validation با میزبان است.</dd></dl><a href="https://developers.openai.com/api/docs/guides/function-calling" target="_blank" rel="noopener noreferrer">Function calling ↗</a></article>
+        <article id="retrieval-controls"><header><h3>Retrieval top-k / chunks</h3><span>RAG</span></header><p>retriever از corpus، k سند یا chunk می‌آورد؛ اندازه و overlap قطعه‌ها context ورودی را شکل می‌دهند.</p><dl><dt>واحد k</dt><dd>سند/بردار</dd><dt>مرز</dt><dd class="boundary">sampling top-k واحدش token است؛ بازیابی خوب synthesis درست را تضمین نمی‌کند.</dd></dl><a href="https://aclanthology.org/2020.emnlp-main.550/" target="_blank" rel="noopener noreferrer">Dense Passage Retrieval ↗</a></article>
+        <article id="logprobs"><header><h3>Logprobs / top_logprobs</h3><span>OBSERVE</span></header><p>احتمال لگاریتمی token خروجی و چند گزینهٔ برتر را برای تحلیل گزارش می‌کند؛ خودش چیزی را تغییر نمی‌دهد.</p><dl><dt>نقش</dt><dd>telemetry</dd><dt>مرز</dt><dd class="boundary">احتمال token نمرهٔ حقیقت یا confidence کالیبره نیست.</dd></dl><a href="https://developers.openai.com/api/reference/cli/resources/responses/methods/create" target="_blank" rel="noopener noreferrer">OpenAI Responses API ↗</a></article>
+      </section>
+    </main>
+    <footer><a href="/">بازگشت به آزمایشگاه</a> · همهٔ فرمول‌ها و ترتیب‌ها در موتور محلی قابل مشاهده‌اند.</footer>
+  </body>
+</html>

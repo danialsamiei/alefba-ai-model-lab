@@ -1,0 +1,70 @@
+# Python environments and caches
+**/.venv/
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.ruff_cache/
+**/.mypy_cache/
+**/.coverage
+**/htmlcov/
+
+# JavaScript and desktop build output
+**/node_modules/
+**/dist/
+**/release/
+**/.vite/
+
+# Local UI and browser evidence (selected public screenshots live in docs/assets)
+**/.playwright-cli/
+**/output/
+**/test-results/
+**/playwright-report/
+
+# Local databases and runtime state
+**/*.sqlite
+**/*.sqlite3
+**/*.sqlite3-*
+**/*.db
+**/*.db-*
+
+# Generated experiment artifacts. Source fixtures and manifests remain tracked.
+**/artifacts/runs/
+**/artifacts/reports/
+**/artifacts/rejected/
+**/artifacts/archives/
+**/artifacts/latest.json
+**/artifacts/lab-report.json
+**/artifacts/lab-report.md
+**/artifacts/acceptance-report.md
+**/artifacts/quick-latest.json
+**/artifacts/quick-lab-report.json
+**/artifacts/quick-lab-report.md
+**/artifacts/checkpoints/
+!**/artifacts/.gitkeep
+
+# Local packaging, logs and operating-system files
+**/*.log
+**/*.exe
+**/*.msi
+**/*.zip
+**/*.7z
+.DS_Store
+Thumbs.db
+
+# Environment files and secrets
+**/.env
+**/.env.*
+!**/.env.example
+**/*credentials*.json
+**/*secret*.json
+**/*.pfx
+**/*.p12
+**/*.pem
+**/*.key
+**/*.jks
+**/*.keystore
+**/.npmrc
+**/.netrc
+**/.pypirc
+**/id_rsa
+**/id_rsa.*

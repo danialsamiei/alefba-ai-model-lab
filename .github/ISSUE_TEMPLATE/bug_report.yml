@@ -1,0 +1,40 @@
+name: Bug report
+description: Report a reproducible defect in a local executable, simulation, or document.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Please remove secrets and personal data from logs before submitting.
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Surface
+      options:
+        - Windows desktop
+        - Digit microscope
+        - Micro reasoning lab
+        - Documentation
+        - Build or CI
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: v0.5.0 or commit SHA
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Include inputs, seed/configuration, expected result, and actual result.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Sanitized logs, screenshots, event hashes, or test output.
+

@@ -1,0 +1,69 @@
+[model]
+vocab_size = 10
+context_length = 8
+d_model = 32
+n_heads = 4
+n_layers = 2
+d_ff = 64
+dropout = 0.0
+
+[canonical_pretrain]
+steps = 900
+batch_size = 24
+learning_rate = 0.003
+min_learning_rate = 0.0001
+warmup_steps = 60
+eval_interval = 50
+weight_decay = 0.01
+gradient_clip = 1.0
+
+[finetune]
+steps = 500
+batch_size = 10
+learning_rate = 0.0015
+min_learning_rate = 0.00005
+warmup_steps = 30
+eval_interval = 25
+weight_decay = 0.005
+gradient_clip = 1.0
+
+[holdout_pretrain]
+steps = 450
+batch_size = 6
+learning_rate = 0.003
+min_learning_rate = 0.0001
+warmup_steps = 30
+eval_interval = 30
+weight_decay = 0.01
+gradient_clip = 1.0
+
+[holdout_finetune]
+steps = 400
+batch_size = 8
+learning_rate = 0.0015
+min_learning_rate = 0.00005
+warmup_steps = 25
+eval_interval = 25
+weight_decay = 0.005
+gradient_clip = 1.0
+
+[corrupt_finetune]
+steps = 500
+batch_size = 10
+learning_rate = 0.0015
+min_learning_rate = 0.00005
+warmup_steps = 30
+eval_interval = 25
+weight_decay = 0.005
+gradient_clip = 1.0
+
+[lab]
+seed = 20260830
+canonical_pretrain_dataset = "pt_patterns_v1"
+full_sft_dataset = "sft_successor_full_v1"
+holdout_pretrain_dataset = "pt_digits_0_7_v1"
+holdout_sft_dataset = "sft_successor_0_7_v1"
+mapping_holdout_sft_dataset = "sft_successor_except7_v1"
+corrupt_sft_dataset = "sft_corrupt4_full_v1"
+true_probe_dataset = "probe_successor_true_v1"
+corrupt_probe_dataset = "probe_successor_corrupt4_v1"

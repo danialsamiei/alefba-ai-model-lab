@@ -1,0 +1,73 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "micro-reasoning-lab"
+version = "0.1.0"
+description = "A transparent micro laboratory for model architectures, test-time compute, MoE, RAG, and tools"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "Danial Samiei" }]
+keywords = ["reasoning", "mixture-of-experts", "rag", "ai-agents", "education", "alefba"]
+requires-python = ">=3.11,<3.12"
+dependencies = [
+  "fastapi[standard-no-fastapi-cloud-cli]==0.141.1",
+  "numpy>=2.3,<3",
+  "safetensors==0.8.0",
+  "torch==2.13.0",
+]
+
+[project.urls]
+Homepage = "https://alef.ba"
+Repository = "https://github.com/danialsamiei/alefba-ai-model-lab/tree/main/reasoning-lab"
+Documentation = "https://github.com/danialsamiei/alefba-ai-model-lab/tree/main/reasoning-lab/docs"
+Issues = "https://github.com/danialsamiei/alefba-ai-model-lab/issues"
+
+[project.scripts]
+reasoning-lab = "reasoning_lab.cli:main"
+
+[dependency-groups]
+dev = [
+  "mypy>=1.18,<2",
+  "pytest>=8.4,<10",
+  "pytest-cov>=7,<8",
+  "ruff>=0.12,<1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/reasoning_lab"]
+artifacts = [
+  "src/reasoning_lab/db/schema.sql",
+  "src/reasoning_lab/static/**",
+]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+ignore = ["E501", "RUF001"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unused_ignores = true
+exclude = ["artifacts", "data/generated"]
+
+[[tool.mypy.overrides]]
+module = ["safetensors.*"]
+ignore_missing_imports = true
