@@ -24,7 +24,7 @@ jobs:
       - name: Build, pretrain, fine-tune, evaluate, and verify
         run: uv run digit-lm run-lab --reset
       - name: Upload evidence, not weights
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: digit-lm-reproducibility-evidence
           path: |
@@ -58,7 +58,7 @@ jobs:
           uv run reasoning-lab evaluate --limit 40
           uv run reasoning-lab verify
       - name: Upload evidence, not weights
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: reasoning-lab-reproducibility-evidence
           path: |
