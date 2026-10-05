@@ -12,10 +12,10 @@ authors = [{ name = "Danial Samiei" }]
 keywords = ["reasoning", "mixture-of-experts", "rag", "ai-agents", "education", "alefba"]
 requires-python = ">=3.11,<3.12"
 dependencies = [
-  "fastapi[standard-no-fastapi-cloud-cli]==0.141.1",
+  "fastapi[standard-no-fastapi-cloud-cli]==0.142.2",
   "numpy>=2.3,<3",
   "safetensors==0.8.0",
-  "torch==2.13.0",
+  "torch==2.14.1",
 ]
 
 [project.urls]
@@ -29,7 +29,7 @@ reasoning-lab = "reasoning_lab.cli:main"
 
 [dependency-groups]
 dev = [
-  "mypy>=1.18,<2",
+  "mypy>=1.18,<3",
   "pytest>=8.4,<10",
   "pytest-cov>=7,<8",
   "ruff>=0.12,<1",
